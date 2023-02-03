@@ -8,7 +8,9 @@ function HomeContainer() {
         <React.Fragment>
             <CssBaseline />
             <Container maxWidth="lg">
-                <Box sx={{ bgcolor: '#cfe8fc', height: '100vh' }} />
+                <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Box sx={{ borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70% ", width: "80%", height: '80%', backgroundImage: 'linear-gradient(45deg,#3023AE 0%,#FF0099 100%)' }}></Box>
+                </Box>
             </Container>
       </React.Fragment>
       );
