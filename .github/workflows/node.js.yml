@@ -22,9 +22,12 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Deploy
+      env:
+        BUILD_NETLIFY: ${{secrets.BUILD_NETLIFY}}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - run: yarn install
     - run: yarn run build
+    - run: curl -X POST -d '{} ${{ secrets.BUILD_NETLIFY }}' 
