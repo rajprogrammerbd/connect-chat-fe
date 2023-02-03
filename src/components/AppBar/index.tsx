@@ -8,7 +8,7 @@ import textFinder from '../assets/static-texts';
 function AppBarContainer() {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
+      <AppBar>
         <Toolbar variant="dense">
           <Typography variant="h6" color="inherit" component="div">
             {textFinder('appName')}
