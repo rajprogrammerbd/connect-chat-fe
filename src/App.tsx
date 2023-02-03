@@ -1,11 +1,9 @@
 import React from 'react'
-import reactLogo from './assets/react.svg'
+import AppBarContainer from './components/AppBar';
 
 function App() {
 
-  return (
-    <h4>Hello</h4>
-  )
+  return <AppBarContainer/>;
 }
 
 export default App
