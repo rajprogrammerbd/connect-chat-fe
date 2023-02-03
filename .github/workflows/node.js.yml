@@ -7,7 +7,7 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "feature/*" ]
 
 jobs:
   build:
@@ -21,10 +21,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the application
+    - name: Deploy
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - run: yarn install
-    - run: npm run build
+    - run: yarn run build
