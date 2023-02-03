@@ -6,8 +6,6 @@ name: Node.js CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main", "feature/*" ]
 
 jobs:
   build:
@@ -30,4 +28,5 @@ jobs:
         cache: 'yarn'
     - run: yarn install
     - run: yarn run build
+    - run: yarn run test:nowatch
     - run: curl -X POST ${{ secrets.BUILD_NETLIFY }}
