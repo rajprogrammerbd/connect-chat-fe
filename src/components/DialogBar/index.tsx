@@ -15,20 +15,28 @@ interface IProps {
 }
 
 interface IPropsOfState {
-    value: string;
+    name: string;
+    chatID: string;
 }
 
 function DialogBar(props: IProps) {
     const { isOpen, closedFn, formSumit } = props;
 
     const [state, setState] = React.useState<IPropsOfState>({
-        value: ''
+        name: '',
+        chatID: ''
     });
 
-    const changeText = (event: any) => {
+    const changeNameText = (event: any) => {
         const { value } = event.target;
 
-        setState({ ...state, value });
+        setState({ ...state, name: value });
+    }
+
+    const changeChatId = (event: any) => {
+        const { value } = event.target;
+
+        setState({ ...state, chatID: value });
     }
 
     return (
@@ -48,7 +56,8 @@ function DialogBar(props: IProps) {
                         {textFinder('noteOfAdminPermission')}
                     </DialogContentText>
 
-                    <CustomInput type="text" value={state.value} onChange={changeText} placeholder={textFinder('placeholderForIDInput')} />
+                    <CustomInput type="text" value={state.chatID} onChange={changeChatId} placeholder={textFinder('placeholderForNameInput')}  />
+                    <CustomInput type="text" value={state.name} onChange={changeNameText} placeholder={textFinder('placeholderForIDInput')} />
                 </DialogContent>
 
                 <DialogActions>

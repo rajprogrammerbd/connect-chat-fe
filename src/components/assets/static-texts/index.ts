@@ -13,7 +13,8 @@ const textObjs: IObjects = {
     labelOfAskingID: 'Please provide your connection ID',
     noteOfAdminPermission: 'Admin will let you in',
     submit: 'Submit',
-    placeholderForIDInput: 'Provide the Chat ID'
+    placeholderForIDInput: 'Provide the Chat ID',
+    placeholderForNameInput: 'Provide your full name'
 };
 
 const textHash = new HashMap(1000);
