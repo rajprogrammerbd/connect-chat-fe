@@ -10,6 +10,7 @@ import NotificationBar from '../NotificationBar';
 interface IState {
     websocket: WebSocket | null;
     isConnected: boolean;
+    isShownNotification: boolean;
 }
 
 interface IRecived {
@@ -26,32 +27,38 @@ interface INotification {
 const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
 
 function HomeContainer() {
-    const [notification, setNotification] = React.useState<INotification>({ status: false, duration: 1000, message: '' });
+    const [notification, setNotification] = React.useState<INotification>({ status: false, duration: 12000, message: '' });
     const ws = useWebSocket(socketUrl);
     const [state, setState] = React.useState<IState>({
         websocket: null,
         isConnected: false,
+        isShownNotification: false,
     });
 
     const handleNotificationOpen = (message: string) => {
         setNotification({ ...notification, status: true, message });
     }
 
-    const handleNotificationClose = () => {
+    const closeNotification = () => {
+        console.log('close notification');
         setNotification({ ...notification, status: false });
     }
 
     const startNewConnection = () =>  {
-        ws.sendJsonMessage({ newConnections: true });
+        ws.sendJsonMessage({ newConnection: true });
     }
 
     React.useEffect(() => {
         const lastMessage: any = ws.lastJsonMessage !== null ? ws.lastJsonMessage : null;
-        
         if (lastMessage !== null && !lastMessage.connection) {
             // This block means connection failed.
             handleNotificationOpen(lastMessage.message);
 
+        } else if (lastMessage !== null && lastMessage.connection) {
+            if (!state.isShownNotification) {
+                setState({ ...state, isConnected: true });
+                handleNotificationOpen(lastMessage.message);
+            }
         }
     }, [ws.lastJsonMessage]);
 
@@ -64,7 +71,7 @@ function HomeContainer() {
                         {state.isConnected ? <ChatBox ws={ws} /> : <QuestionBox startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
-                <NotificationBar duration={notification.duration} handleClose={handleNotificationClose} message={notification.message} open={notification.status} />
+                <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} open={notification.status} />
             </Container>
       </React.Fragment>
       );

@@ -11,7 +11,7 @@ function ChatBox(props: IProps) {
 
     React.useEffect(() => {
         // .........
-        ws.sendMessage('Hi');
+        // ws.sendMessage('Hi');
     }, [state]);
 
 
