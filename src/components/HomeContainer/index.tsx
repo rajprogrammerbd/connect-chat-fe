@@ -71,7 +71,7 @@ function HomeContainer() {
                         {state.isConnected ? <ChatBox ws={ws} /> : <QuestionBox startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
-                <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} open={notification.status} />
+                <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} severity={"success"} open={notification.status} />
             </Container>
       </React.Fragment>
       );
