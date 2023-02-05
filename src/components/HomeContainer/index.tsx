@@ -67,7 +67,7 @@ function HomeContainer() {
             <CssBaseline />
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Box sx={{ display: 'flex', p: "40px", flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
+                    <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
                         {state.isConnected ? <ChatBox ws={ws} /> : <QuestionBox startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
