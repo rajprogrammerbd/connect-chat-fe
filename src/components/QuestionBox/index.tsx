@@ -9,7 +9,13 @@ interface IDialogState {
     openDialog: boolean;
 }
 
-function QuestionBox() {
+interface IProps {
+    startNewConnection: () => void;
+}
+
+function QuestionBox(props: IProps) {
+    const { startNewConnection } = props;
+
     const [dialog, setDialog] = React.useState<IDialogState>({ openDialog: false });
 
     const openBar = () => {
@@ -32,7 +38,7 @@ function QuestionBox() {
 
                 <Stack spacing={1} mt={1} direction="row">
                     <Button variant="contained" onClick={openBar}>{textFinder('existedIdButtonText')}</Button>
-                    <Button variant="contained">{textFinder('startNewChatButtonText')}</Button>
+                    <Button variant="contained" onClick={startNewConnection}>{textFinder('startNewChatButtonText')}</Button>
                 </Stack>
             </FormControl>
             <DialogBar isOpen={dialog.openDialog} closedFn={closeBar} formSumit={formSubmitted} />
