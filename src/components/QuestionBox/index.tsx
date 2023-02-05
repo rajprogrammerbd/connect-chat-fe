@@ -26,8 +26,8 @@ function QuestionBox(props: IProps) {
         setDialog({ ...dialog, openDialog: false });
     }
 
-    const formSubmitted = () => {
-        
+    const formSubmitted = (event: any) => {
+        console.log('formSubmitted', event);
     }
 
     return (

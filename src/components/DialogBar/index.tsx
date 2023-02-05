@@ -4,19 +4,23 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import CircularProgress from '@mui/material/CircularProgress';
 import textFinder from '../assets/static-texts';
 import { Button } from '@mui/material';
 import CustomInput from '../customTextField';
 
-interface IProps {
-    isOpen: boolean;
-    closedFn: () => void;
-    formSumit: () => void;
-}
-
 interface IPropsOfState {
     name: string;
     chatID: string;
+}
+interface IProps {
+    isOpen: boolean;
+    closedFn: () => void;
+    formSumit: (state: IPropsOfState) => void;
+}
+
+interface ISubmitted {
+    isSubmitted: boolean;
 }
 
 function DialogBar(props: IProps) {
@@ -26,6 +30,8 @@ function DialogBar(props: IProps) {
         name: '',
         chatID: ''
     });
+
+    const [submittedData, setSubmittedData] = React.useState<ISubmitted>({ isSubmitted: false });
 
     const changeNameText = (event: any) => {
         const { value } = event.target;
@@ -37,6 +43,11 @@ function DialogBar(props: IProps) {
         const { value } = event.target;
 
         setState({ ...state, chatID: value });
+    }
+
+    const formSubmittedLocally = () => {
+        setSubmittedData({ ...submittedData, isSubmitted: true });
+        formSumit(state);
     }
 
     return (
@@ -62,8 +73,8 @@ function DialogBar(props: IProps) {
 
                 <DialogActions>
                     <Button onClick={closedFn}>Disagree</Button>
-                    <Button onClick={formSumit}>
-                        {textFinder('submit')}
+                    <Button onClick={formSubmittedLocally}>
+                        {submittedData.isSubmitted ? <CircularProgress /> : textFinder('submit')}
                     </Button>
                 </DialogActions>
 
