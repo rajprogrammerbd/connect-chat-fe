@@ -11,7 +11,7 @@ interface IDialogState {
 }
 
 interface IProps {
-    startNewConnection: () => void;
+    startNewConnection: (name: string) => void;
 }
 
 function QuestionBox(props: IProps) {
@@ -32,7 +32,12 @@ function QuestionBox(props: IProps) {
     }
 
     const formSubmitted = (event: any) => {
-        console.log('formSubmitted', event);
+        const { name } = event;
+
+        if (dialog.forNewUser) {
+            startNewConnection(name);
+        }
+
     }
 
     return (
@@ -44,7 +49,7 @@ function QuestionBox(props: IProps) {
                 <Stack spacing={1} mt={1} direction="row">
                     <Button variant="contained" onClick={openBar}>{textFinder('existedIdButtonText')}</Button>
                     <Button variant="contained" onClick={openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
-                </Stack> { /** startNewConnection **/}
+                </Stack>
             </FormControl>
             <DialogBar isOpen={dialog.openDialog} closedFn={closeBar} formSumit={formSubmitted} isNewUser={dialog.forNewUser} />
         </>

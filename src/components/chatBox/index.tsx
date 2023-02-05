@@ -16,6 +16,8 @@ interface IProps {
 interface IState {
     userId: string;
     accessId: string;
+    name: string;
+    userIds: string[];
 }
 
 const useStyles: any = makeStyles({
@@ -42,15 +44,17 @@ function ChatBox(props: IProps) {
     const { ws } = props;
     const [state, setState] = React.useState<IState>({
         userId: '',
-        accessId: ''
+        accessId: '',
+        name: '',
+        userIds: []
     });
 
     const classes = useStyles();
 
     React.useEffect(() => {
         // .........
-        const { userId, accessId } = ws.lastJsonMessage as any;
-        setState({ userId, accessId })
+        const { userId, accessId, name, userIds } = ws.lastJsonMessage as any;
+        setState({ userId, accessId, name, userIds })
     }, []);
 
 
@@ -60,10 +64,10 @@ function ChatBox(props: IProps) {
             <Box sx={{ width: 1, height: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <AppBar position="static">
                     <Toolbar>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            Top
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, textTransform: 'uppercase', fontWeight: 'bold' }}>
+                            {state.name}
                         </Typography>
-                        <Button color="inherit">Login</Button>
+                        <Button color="inherit">Connections: {state.userIds.length}</Button>
                         </Toolbar>
                     </AppBar>
 

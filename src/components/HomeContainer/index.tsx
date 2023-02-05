@@ -44,8 +44,8 @@ function HomeContainer() {
         setNotification({ ...notification, status: false });
     }
 
-    const startNewConnection = () =>  {
-        ws.sendJsonMessage({ newConnection: true });
+    const startNewConnection = (name: string) =>  {
+        ws.sendJsonMessage({ newConnection: true, name });
     }
 
     React.useEffect(() => {
