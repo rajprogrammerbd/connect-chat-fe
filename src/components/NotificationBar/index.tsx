@@ -37,10 +37,10 @@ function NotificationBar(props: IProps) {
         action={action}
       >
         <Alert severity={severity} onClose={handleClose} sx={{ width: '100%' }}>
-          This is a success message!
+          {message}
         </Alert>
       </Snackbar>
     );
 }
 
-export default NotificationBar;
+export default React.memo(NotificationBar);
