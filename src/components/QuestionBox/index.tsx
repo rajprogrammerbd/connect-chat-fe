@@ -7,6 +7,7 @@ import DialogBar from '../DialogBar';
 
 interface IDialogState {
     openDialog: boolean;
+    forNewUser: boolean;
 }
 
 interface IProps {
@@ -16,10 +17,14 @@ interface IProps {
 function QuestionBox(props: IProps) {
     const { startNewConnection } = props;
 
-    const [dialog, setDialog] = React.useState<IDialogState>({ openDialog: false });
+    const [dialog, setDialog] = React.useState<IDialogState>({ openDialog: false, forNewUser: false });
 
     const openBar = () => {
-        setDialog({ ...dialog, openDialog: true });
+        setDialog({ ...dialog, openDialog: true, forNewUser: false });
+    }
+
+    const openBarForNewUser = () => {
+        setDialog({ ...dialog, openDialog: true, forNewUser: true });
     }
 
     const closeBar = () => {
@@ -38,10 +43,10 @@ function QuestionBox(props: IProps) {
 
                 <Stack spacing={1} mt={1} direction="row">
                     <Button variant="contained" onClick={openBar}>{textFinder('existedIdButtonText')}</Button>
-                    <Button variant="contained" onClick={startNewConnection}>{textFinder('startNewChatButtonText')}</Button>
-                </Stack>
+                    <Button variant="contained" onClick={openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
+                </Stack> { /** startNewConnection **/}
             </FormControl>
-            <DialogBar isOpen={dialog.openDialog} closedFn={closeBar} formSumit={formSubmitted} />
+            <DialogBar isOpen={dialog.openDialog} closedFn={closeBar} formSumit={formSubmitted} isNewUser={dialog.forNewUser} />
         </>
     );
 }

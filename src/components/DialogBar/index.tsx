@@ -17,6 +17,7 @@ interface IProps {
     isOpen: boolean;
     closedFn: () => void;
     formSumit: (state: IPropsOfState) => void;
+    isNewUser: boolean;
 }
 
 interface ISubmitted {
@@ -24,7 +25,7 @@ interface ISubmitted {
 }
 
 function DialogBar(props: IProps) {
-    const { isOpen, closedFn, formSumit } = props;
+    const { isOpen, closedFn, formSumit, isNewUser } = props;
 
     const [state, setState] = React.useState<IPropsOfState>({
         name: '',
@@ -67,8 +68,8 @@ function DialogBar(props: IProps) {
                         {textFinder('noteOfAdminPermission')}
                     </DialogContentText>
 
-                    <CustomInput type="text" value={state.chatID} onChange={changeChatId} placeholder={textFinder('placeholderForNameInput')}  />
-                    <CustomInput type="text" value={state.name} onChange={changeNameText} placeholder={textFinder('placeholderForIDInput')} />
+                    <CustomInput type="text" value={state.name} onChange={changeNameText} placeholder={textFinder('placeholderForNameInput')}  />
+                    {isNewUser ? null : <CustomInput type="text" value={state.chatID} onChange={changeChatId} placeholder={textFinder('placeholderForIDInput')} />}
                 </DialogContent>
 
                 <DialogActions>
