@@ -11,7 +11,7 @@ const textObjs: IObjects = {
     existedIdButtonText: 'Existed ID',
     startNewChatButtonText: 'Start new Chat',
     labelOfAskingID: 'Please provide your connection ID',
-    noteOfAdminPermission: 'Admin will let you in',
+    provideAccessID: 'Provide the access ID to connect',
     submit: 'Submit',
     placeholderForIDInput: 'Provide the Chat ID',
     placeholderForNameInput: 'Provide your full name'

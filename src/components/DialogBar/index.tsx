@@ -81,7 +81,7 @@ function DialogBar(props: IProps) {
 
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        {textFinder('noteOfAdminPermission')}
+                        {textFinder('provideAccessID')}
                     </DialogContentText>
 
                     <CustomInput type="text" value={state.name} onChange={changeNameText} placeholder={textFinder('placeholderForNameInput')}  />
