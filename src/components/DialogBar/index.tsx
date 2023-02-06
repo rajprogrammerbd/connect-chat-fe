@@ -32,6 +32,22 @@ function DialogBar(props: IProps) {
         chatID: ''
     });
 
+    const isDisabled = (): boolean => {
+        if (isNewUser) {
+            if (state.name.length === 0) {
+                return true;
+            }
+
+            return false;
+        } else {
+            if (state.chatID.length === 0 && state.name.length === 0) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     const [submittedData, setSubmittedData] = React.useState<ISubmitted>({ isSubmitted: false });
 
     const changeNameText = (event: any) => {
@@ -74,7 +90,7 @@ function DialogBar(props: IProps) {
 
                 <DialogActions>
                     <Button onClick={closedFn}>Disagree</Button>
-                    <Button onClick={formSubmittedLocally}>
+                    <Button disabled={isNewUser ? state.name === '' : (state.name === '' || state.chatID === '')} onClick={formSubmittedLocally}>
                         {submittedData.isSubmitted ? <CircularProgress /> : textFinder('submit')}
                     </Button>
                 </DialogActions>
