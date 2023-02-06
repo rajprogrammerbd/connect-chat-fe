@@ -12,92 +12,89 @@ import CustomInput from '../customTextField';
 interface IPropsOfState {
     name: string;
     chatID: string;
+    isSubmitted: boolean;
 }
 interface IProps {
     isOpen: boolean;
     closedFn: () => void;
     formSumit: (state: IPropsOfState) => void;
     isNewUser: boolean;
+    restore: boolean;
 }
 
-interface ISubmitted {
-    isSubmitted: boolean;
-}
+class DialogBar extends React.PureComponent<IProps, IPropsOfState> {
+    constructor(props: IProps) {
+        super(props);
 
-function DialogBar(props: IProps) {
-    const { isOpen, closedFn, formSumit, isNewUser } = props;
-
-    const [state, setState] = React.useState<IPropsOfState>({
-        name: '',
-        chatID: ''
-    });
-
-    const isDisabled = (): boolean => {
-        if (isNewUser) {
-            if (state.name.length === 0) {
-                return true;
-            }
-
-            return false;
-        } else {
-            if (state.chatID.length === 0 && state.name.length === 0) {
-                return true;
-            }
-
-            return false;
+        this.state = {
+            name: '',
+            chatID: '',
+            isSubmitted: false
         }
     }
 
-    const [submittedData, setSubmittedData] = React.useState<ISubmitted>({ isSubmitted: false });
+    static getDerivedStateFromProps(props: IProps, state: IPropsOfState) {
+        // Update the state using the life-cycle hooks.
+        if (props.restore) {
+            return {
+                ...state,
+                isSubmitted: false
+            }
+        }
 
-    const changeNameText = (event: any) => {
+        return state;
+    }
+
+    changeNameText = (event: any) => {
         const { value } = event.target;
 
-        setState({ ...state, name: value });
+        this.setState({ ...this.state, name: value });
     }
 
-    const changeChatId = (event: any) => {
+    changeChatId = (event: any) => {
         const { value } = event.target;
 
-        setState({ ...state, chatID: value });
+        this.setState({ ...this.state, chatID: value });
     }
 
-    const formSubmittedLocally = () => {
-        setSubmittedData({ ...submittedData, isSubmitted: true });
-        formSumit(state);
+    formSubmittedLocally = () => {
+        this.setState({ ...this.state, isSubmitted: true });
+        this.props.formSumit(this.state);
     }
 
-    return (
-        <>
-            <Dialog
-                open={isOpen}
-                onClose={closedFn}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {textFinder('labelOfAskingID')}
-                </DialogTitle>
-
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {textFinder('provideAccessID')}
-                    </DialogContentText>
-
-                    <CustomInput type="text" value={state.name} onChange={changeNameText} placeholder={textFinder('placeholderForNameInput')}  />
-                    {isNewUser ? null : <CustomInput type="text" value={state.chatID} onChange={changeChatId} placeholder={textFinder('placeholderForIDInput')} />}
-                </DialogContent>
-
-                <DialogActions>
-                    <Button onClick={closedFn}>Disagree</Button>
-                    <Button disabled={isNewUser ? state.name === '' : (state.name === '' || state.chatID === '')} onClick={formSubmittedLocally}>
-                        {submittedData.isSubmitted ? <CircularProgress /> : textFinder('submit')}
-                    </Button>
-                </DialogActions>
-
-            </Dialog>
-        </>
-    );
+    render() {
+        return (
+            <>
+                <Dialog
+                    open={this.props.isOpen}
+                    onClose={this.props.closedFn}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {textFinder('labelOfAskingID')}
+                    </DialogTitle>
+    
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            {textFinder('provideAccessID')}
+                        </DialogContentText>
+    
+                        <CustomInput type="text" value={this.state.name} onChange={this.changeNameText} placeholder={textFinder('placeholderForNameInput')}  />
+                        {this.props.isNewUser ? null : <CustomInput type="text" value={this.state.chatID} onChange={this.changeChatId} placeholder={textFinder('placeholderForIDInput')} />}
+                    </DialogContent>
+    
+                    <DialogActions>
+                        <Button onClick={this.props.closedFn}>Disagree</Button>
+                        <Button disabled={this.props.isNewUser ? this.state.name === '' : (this.state.name === '' || this.state.chatID === '')} onClick={this.formSubmittedLocally}>
+                            {this.state.isSubmitted ? <CircularProgress /> : textFinder('submit')}
+                        </Button>
+                    </DialogActions>
+    
+                </Dialog>
+            </>
+        );
+    }
 }
 
-export default React.memo(DialogBar);
+export default DialogBar;

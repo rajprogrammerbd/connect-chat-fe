@@ -4,56 +4,86 @@ import FormControl from '@mui/material/FormControl';
 import { Button, FormLabel, Stack } from '@mui/material';
 import textFinder from '../assets/static-texts';
 import DialogBar from '../DialogBar';
+import { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
 interface IDialogState {
     openDialog: boolean;
     forNewUser: boolean;
+    restore: boolean;
 }
 
 interface IProps {
     startNewConnection: (name: string) => void;
+    canOpen: boolean;
+    ws: WebSocketHook<any | null, MessageEvent<any> | null>;
+    setDialogLocallyResDefault: () => void;
 }
 
-function QuestionBox(props: IProps) {
-    const { startNewConnection } = props;
+class QuestionBox extends React.PureComponent<IProps, IDialogState> {
+    constructor (props: IProps) {
+        super(props);
 
-    const [dialog, setDialog] = React.useState<IDialogState>({ openDialog: false, forNewUser: false });
-
-    const openBar = () => {
-        setDialog({ ...dialog, openDialog: true, forNewUser: false });
+        this.state = {
+            openDialog: false,
+            forNewUser: false,
+            restore: false
+        }
     }
 
-    const openBarForNewUser = () => {
-        setDialog({ ...dialog, openDialog: true, forNewUser: true });
+
+    static getDerivedStateFromProps(props: IProps, state: IDialogState) {
+        // Update the state using the life-cycle hooks.
+        if (!props.canOpen) {
+            return state;
+        }
+
+        return {
+            ...state,
+            openDialog: false,
+            forNewUser: false,
+            restore: true
+        }
     }
 
-    const closeBar = () => {
-        setDialog({ ...dialog, openDialog: false });
+    openBar = () => {
+        this.props.setDialogLocallyResDefault();
+        this.setState({ ...this.state, openDialog: true, forNewUser: false });
     }
 
-    const formSubmitted = (event: any) => {
+    openBarForNewUser = () => {
+        this.props.setDialogLocallyResDefault();
+        this.setState({ ...this.state, openDialog: true, forNewUser: true });
+    }
+
+    closeBar = () => {
+        this.setState({ ...this.state, openDialog: false });
+    }
+
+    formSubmitted = (event: any) => {
         const { name } = event;
 
-        if (dialog.forNewUser) {
-            startNewConnection(name);
+        if (this.state.forNewUser) {
+            this.props.startNewConnection(name);
         }
 
     }
 
-    return (
-        <>
-            <Typography variant="h5" gutterBottom>{textFinder('longDescriptionFormText')}</Typography>
-            <FormControl sx={{ m: 3, display: 'block' }} component="fieldset" variant="standard">
-                <FormLabel component="legend">{textFinder('questionAboutExistedID')}</FormLabel>
-
-                <Stack spacing={1} mt={1} direction="row">
-                    <Button variant="contained" onClick={openBar}>{textFinder('existedIdButtonText')}</Button>
-                    <Button variant="contained" onClick={openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
-                </Stack>
-            </FormControl>
-            <DialogBar isOpen={dialog.openDialog} closedFn={closeBar} formSumit={formSubmitted} isNewUser={dialog.forNewUser} />
-        </>
-    );
+    render() {
+        return (
+            <>
+                <Typography variant="h5" gutterBottom>{textFinder('longDescriptionFormText')}</Typography>
+                <FormControl sx={{ m: 3, display: 'block' }} component="fieldset" variant="standard">
+                    <FormLabel component="legend">{textFinder('questionAboutExistedID')}</FormLabel>
+    
+                    <Stack spacing={1} mt={1} direction="row">
+                        <Button variant="contained" onClick={this.openBar}>{textFinder('existedIdButtonText')}</Button>
+                        <Button variant="contained" onClick={this.openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
+                    </Stack>
+                </FormControl>
+                <DialogBar restore={this.state.restore} isOpen={this.state.openDialog} closedFn={this.closeBar} formSumit={this.formSubmitted} isNewUser={this.state.forNewUser} />
+            </>
+        );
+    }
 }
 
-export default React.memo(QuestionBox);
+export default QuestionBox;
