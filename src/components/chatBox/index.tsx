@@ -6,8 +6,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
+import NotificationBar from '../NotificationBar';
 
 interface IProps {
     ws: WebSocketHook<JsonValue | null, MessageEvent<any> | null>;
@@ -18,6 +17,15 @@ interface IState {
     accessId: string;
     name: string;
     userIds: string[];
+}
+
+type SEVERITY = "error" | "warning" | "info" | "success";
+
+interface INotificationBar {
+    open: boolean;
+    message: string;
+    duration: number;
+    severity: SEVERITY;
 }
 
 const useStyles: any = makeStyles({
@@ -49,6 +57,16 @@ function ChatBox(props: IProps) {
         userIds: []
     });
 
+    const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
+
+    const openNotification = (message: string, type: SEVERITY) => {
+        setNotification({ ...notification, open: true, message, severity: type });
+    }
+
+    const closeNotification = () => {
+        setNotification({ ...notification, open: false });
+    }
+
     const classes = useStyles();
 
     React.useEffect(() => {
@@ -56,6 +74,18 @@ function ChatBox(props: IProps) {
         const { userId, accessId, name, userIds } = ws.lastJsonMessage as any;
         setState({ userId, accessId, name, userIds })
     }, []);
+
+    React.useEffect(() => {
+        if (state.userIds.length === 0) {
+            const timeout = window.setTimeout(() => {
+                openNotification('Still one is available on the chat', 'warning');
+            }, 10000);
+
+            return () => {
+                window.clearTimeout(timeout);
+            }
+        }
+    }, [state.userIds]);
 
 
 
@@ -92,6 +122,8 @@ function ChatBox(props: IProps) {
                         </Toolbar>
                     </AppBar>
             </Box>
+
+            <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} open={notification.open} severity={notification.severity} />
         </>
     );
 }
