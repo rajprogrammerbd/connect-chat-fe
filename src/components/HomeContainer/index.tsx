@@ -6,6 +6,8 @@ import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
 import useWebSocket from 'react-use-websocket';
 import NotificationBar from '../NotificationBar';
+import { useAppSelector, useAppDispatch } from '../../store/hooks';
+import { setWebSocket } from '../../store';
 
 interface IState {
     websocket: WebSocket | null;
@@ -31,6 +33,8 @@ interface DialogBarResTypes {
 const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
 
 function HomeContainer() {
+    const dispatch = useAppDispatch();
+
     const [notification, setNotification] = React.useState<INotification>({ status: false, duration: 12000, message: '' });
     const ws = useWebSocket(socketUrl);
     const [state, setState] = React.useState<IState>({
@@ -51,6 +55,7 @@ function HomeContainer() {
 
     const startNewConnection = (name: string) =>  {
         ws.sendJsonMessage({ newConnection: true, name });
+        dispatch(setWebSocket(ws));
     }
 
     const setDialogLocallyResDefault = () => {
