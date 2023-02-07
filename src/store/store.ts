@@ -4,7 +4,10 @@ import websocketReducer from './index';
 export const store = configureStore({
   reducer: {
     websocketReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+        serializableCheck: false,
+      }),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
