@@ -1,32 +1,68 @@
+import LinkedList from './../Data/LinkedList';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { WebSocketHook } from 'react-use-websocket/dist/lib/types';
-import { WebSocketEvents } from 'vitest';
-
-type WebSocketType = WebSocketHook<any | null>;
 
 // Define a type for the slice state
-interface WebsocketState {
-  ws: null | WebSocketType
+interface UserState {
+  userName: string;
+  accessId: string;
+  connected: string[];
+  userId: string;
+  messages?: LinkedList,
+  isConnected?: boolean;
+  isShownNotification?: boolean;
+  isErrorOccured?: boolean;
 }
 
+interface ReceivedMessagePayload {
+  userName: string;
+  accessId: string;
+  connected: string[];
+  userId: string;
+  messages: LinkedList;
+}
+
+const list = new LinkedList();
+
 // Define the initial state using that type
-const initialState: WebsocketState = {
-  ws: null,
+const initialState: UserState = {
+  userName: '',
+  accessId: '',
+  connected: [],
+  userId: '',
+  messages: list,
+  isConnected: false,
+  isShownNotification: false,
+  isErrorOccured: false
 }
 
 export const websocketSlice = createSlice({
-  name: 'websocket',
+  name: 'users',
   initialState,
   reducers: {
-    // Use the PayloadAction type to declare the contents of `action.payload`
-    setWebSocket: (state, action: PayloadAction<any>) => {
-      // state.value += action.payload
-        state.ws = action.payload;
+    default_start: (state, action: PayloadAction<UserState>) => {
+      state.accessId = action.payload.accessId;
+      state.connected = action.payload.connected;
+      action.payload.messages ? state.messages = action.payload.messages : null;
+      state.userName = action.payload.userName;
+      state.accessId = action.payload.accessId;
     },
+
+    set_isConnected: (state, action: PayloadAction<boolean>) => {
+      state.isConnected = action.payload;
+    },
+    set_isError: (state, action: PayloadAction<boolean>) => {
+      state.isErrorOccured = action.payload;
+    },
+    received_message: (state, action: PayloadAction<ReceivedMessagePayload>) => {
+      state.accessId = action.payload.accessId;
+      state.connected = action.payload.connected;
+      state.userName = action.payload.userName;
+      state.accessId = action.payload.accessId;
+    }
   },
 })
 
-export const { setWebSocket } = websocketSlice.actions;
+export const { default_start, set_isConnected, set_isError, received_message } = websocketSlice.actions;
 
 export default websocketSlice.reducer;

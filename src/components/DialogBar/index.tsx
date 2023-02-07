@@ -34,7 +34,6 @@ class DialogBar extends React.PureComponent<IProps, IPropsOfState> {
     }
 
     static getDerivedStateFromProps(props: IProps, state: IPropsOfState) {
-        // Update the state using the life-cycle hooks.
         if (props.restore) {
             return {
                 ...state,

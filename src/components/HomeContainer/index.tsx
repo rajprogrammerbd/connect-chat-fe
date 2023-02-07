@@ -4,82 +4,56 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
-import useWebSocket from 'react-use-websocket';
 import NotificationBar from '../NotificationBar';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { setWebSocket } from '../../store';
-
-interface IState {
-    websocket: WebSocket | null;
-    isConnected: boolean;
-    isShownNotification: boolean;
-}
-
-interface IRecived {
-    connection: boolean;
-    message: string;
-}
-
-interface INotification {
-    status: boolean;
-    duration: number;
-    message: string;
-}
-
-interface DialogBarResTypes {
-    isErrorOccured: boolean;
-}
+import { received_message, set_isConnected, set_isError } from '../../store';
+import { set_notification } from '../../store/notification';
+import { RootState } from '../../store/store';
+import LinkedList from '../../Data/LinkedList';
 
 const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
 
 function HomeContainer() {
     const dispatch = useAppDispatch();
 
-    const [notification, setNotification] = React.useState<INotification>({ status: false, duration: 12000, message: '' });
-    const ws = useWebSocket(socketUrl);
-    const [state, setState] = React.useState<IState>({
-        websocket: null,
-        isConnected: false,
-        isShownNotification: false,
-    });
-    const [dialogBarRes, setDialogBarRes] = React.useState<DialogBarResTypes>({ isErrorOccured: false });
+    const { isShownNotification, isConnected, isErrorOccured } = useAppSelector((state: RootState) => state.websocketReducer);
+    const { duration, message, status } = useAppSelector((state: RootState) => state.notificationReducer);
 
     const handleNotificationOpen = (message: string) => {
-        setNotification({ ...notification, status: true, message });
+        dispatch(set_notification({ message, status: true }));
     }
 
     const closeNotification = () => {
-        console.log('close notification');
-        setNotification({ ...notification, status: false });
+        dispatch(set_notification({ message: '', status: false }));
     }
 
     const startNewConnection = (name: string) =>  {
-        ws.sendJsonMessage({ newConnection: true, name });
-        dispatch(setWebSocket(ws));
+        const wss = new WebSocket(socketUrl);
+
+        wss.onopen = function() {
+            wss.send(JSON.stringify({ newConnection: true, name }));
+
+            wss.onmessage = function(data: any) {
+                const parsed = JSON.parse(data.data);
+
+                if (!parsed.connection) {
+                    dispatch(set_isError(true));                    
+                    handleNotificationOpen(parsed.message);
+                } else {
+                    dispatch(set_isError(false));
+                    if (!isShownNotification) {
+                        dispatch(set_isConnected(true));
+                        handleNotificationOpen(parsed.message);
+                        dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
+                    }
+                }
+            }
+        }
     }
 
     const setDialogLocallyResDefault = () => {
-        // This block means connection failed.
-        setDialogBarRes({ isErrorOccured: false });
+        dispatch(set_isError(false));
     }
-
-    React.useEffect(() => {
-        const lastMessage: any = ws.lastJsonMessage !== null ? ws.lastJsonMessage : null;
-        if (lastMessage !== null && !lastMessage.connection) {
-            console.log('this runs when the request failed');
-            // This block means connection failed.
-            setDialogBarRes({ isErrorOccured: true });
-            
-            handleNotificationOpen(lastMessage.message);
-
-        } else if (lastMessage !== null && lastMessage.connection) {
-            setDialogBarRes({ isErrorOccured: false });
-            if (!state.isShownNotification) {
-                setState({ ...state, isConnected: true });
-                handleNotificationOpen(lastMessage.message);
-            }
-        }
-    }, [ws.lastJsonMessage]);
 
     return (
         <React.Fragment>
@@ -87,10 +61,10 @@ function HomeContainer() {
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
-                        {state.isConnected ? <ChatBox ws={ws} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={dialogBarRes.isErrorOccured} ws={ws} startNewConnection={startNewConnection} />}
+                        {isConnected ? <ChatBox /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
-                <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} severity={"success"} open={notification.status} />
+                <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />
             </Container>
       </React.Fragment>
       );

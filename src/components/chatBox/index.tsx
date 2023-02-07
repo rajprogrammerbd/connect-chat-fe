@@ -1,23 +1,13 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { WebSocketHook, JsonValue } from 'react-use-websocket/dist/lib/types';
 import { makeStyles } from '@mui/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import NotificationBar from '../NotificationBar';
-
-interface IProps {
-    ws: WebSocketHook<JsonValue | null, MessageEvent<any> | null>;
-}
-
-interface IState {
-    userId: string;
-    accessId: string;
-    name: string;
-    userIds: string[];
-}
+import { useAppSelector } from '../../store/hooks';
+import { RootState } from '../../store/store';
 
 type SEVERITY = "error" | "warning" | "info" | "success";
 
@@ -48,14 +38,8 @@ const useStyles: any = makeStyles({
     },
   });
 
-function ChatBox(props: IProps) {
-    const { ws } = props;
-    const [state, setState] = React.useState<IState>({
-        userId: '',
-        accessId: '',
-        name: '',
-        userIds: []
-    });
+function ChatBox() {
+    const { userName, connected } = useAppSelector((state: RootState) => state.websocketReducer);
 
     const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
 
@@ -70,13 +54,7 @@ function ChatBox(props: IProps) {
     const classes = useStyles();
 
     React.useEffect(() => {
-        // .........
-        const { userId, accessId, name, userIds } = ws.lastJsonMessage as any;
-        setState({ userId, accessId, name, userIds })
-    }, []);
-
-    React.useEffect(() => {
-        if (state.userIds.length === 0) {
+        if (connected.length === 0) {
             const timeout = window.setTimeout(() => {
                 openNotification('Still one is available on the chat', 'warning');
             }, 10000);
@@ -85,7 +63,7 @@ function ChatBox(props: IProps) {
                 window.clearTimeout(timeout);
             }
         }
-    }, [state.userIds]);
+    }, [connected]);
 
 
 
@@ -95,9 +73,9 @@ function ChatBox(props: IProps) {
             <AppBar position="static">
                     <Toolbar>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1, textTransform: 'uppercase', fontWeight: 'bold' }}>
-                            {state.name}
+                            {userName}
                         </Typography>
-                        <Button color="inherit">Connections: {state.userIds.length}</Button>
+                        <Button color="inherit">Connections: {connected.length}</Button>
                         </Toolbar>
                     </AppBar>
 

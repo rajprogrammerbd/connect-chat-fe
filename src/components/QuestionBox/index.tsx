@@ -4,7 +4,6 @@ import FormControl from '@mui/material/FormControl';
 import { Button, FormLabel, Stack } from '@mui/material';
 import textFinder from '../assets/static-texts';
 import DialogBar from '../DialogBar';
-import { WebSocketHook } from 'react-use-websocket/dist/lib/types';
 
 interface IDialogState {
     openDialog: boolean;
@@ -14,8 +13,7 @@ interface IDialogState {
 
 interface IProps {
     startNewConnection: (name: string) => void;
-    canOpen: boolean;
-    ws: WebSocketHook<any | null, MessageEvent<any> | null>;
+    canOpen: boolean | undefined;
     setDialogLocallyResDefault: () => void;
 }
 
@@ -32,8 +30,7 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
 
 
     static getDerivedStateFromProps(props: IProps, state: IDialogState) {
-        // Update the state using the life-cycle hooks.
-        if (!props.canOpen) {
+        if (!props.canOpen && props.canOpen !== undefined) {
             return state;
         }
 
