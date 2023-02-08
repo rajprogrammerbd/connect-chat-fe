@@ -44,8 +44,9 @@ function HomeContainer() {
                     if (!isShownNotification) {
                         dispatch(set_isConnected(true));
                         handleNotificationOpen(parsed.message);
-                        dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
                     }
+
+                    dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
                 }
             }
         }
