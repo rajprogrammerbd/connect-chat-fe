@@ -15,6 +15,7 @@ interface IProps {
     startNewConnection: (name: string) => void;
     canOpen: boolean | undefined;
     setDialogLocallyResDefault: () => void;
+    startExistedConnection: (name: string, chatId: string) => void;
 }
 
 class QuestionBox extends React.PureComponent<IProps, IDialogState> {
@@ -57,11 +58,15 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
     }
 
     formSubmitted = (event: any) => {
-        const { name } = event;
+        const { name, chatID } = event;
 
         if (this.state.forNewUser) {
             this.props.startNewConnection(name);
+            return;
         }
+
+        this.props.startExistedConnection(name, chatID);
+        return;
 
     }
 

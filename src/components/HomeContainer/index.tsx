@@ -27,6 +27,31 @@ function HomeContainer() {
         dispatch(set_notification({ message: '', status: false }));
     }
 
+    const startExistedConnection = (name: string, chatID: string) => {
+        const wss = new WebSocket(socketUrl);
+
+        wss.onopen = function() {
+            wss.send(JSON.stringify({ newConnection: false, name, chatID }));
+
+            wss.onmessage = function(data: any) {
+                const parsed = JSON.parse(data.data);
+
+                if (!parsed.connection) {
+                    dispatch(set_isError(true));                    
+                    handleNotificationOpen(parsed.message);
+                } else {
+                    dispatch(set_isError(false));
+                    if (!isShownNotification) {
+                        dispatch(set_isConnected(true));
+                        handleNotificationOpen(parsed.message);
+                    }
+
+                    dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
+                }
+            }
+        }
+    }
+
     const startNewConnection = (name: string) =>  {
         const wss = new WebSocket(socketUrl);
 
@@ -62,7 +87,7 @@ function HomeContainer() {
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
-                        {isConnected ? <ChatBox /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startNewConnection={startNewConnection} />}
+                        {isConnected ? <ChatBox /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
                 <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />
