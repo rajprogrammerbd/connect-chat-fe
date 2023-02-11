@@ -7,6 +7,7 @@ import textFinder from '../assets/static-texts';
 import { useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { Button, IconButton, Modal } from '@mui/material';
+import { IUsersName } from '../../Types';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -46,7 +47,7 @@ function AppBarContainer() {
                     Users name:
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {connected.map((name: string, key) => <Typography key={key} variant='h6' color="inherit">{name}</Typography>)}
+                    {connected.map((connectObj: IUsersName) => <Typography key={connectObj.userId} variant='h6' color="inherit">{connectObj.name}</Typography>)}
                 </Typography>
         </Box>
       </Modal>

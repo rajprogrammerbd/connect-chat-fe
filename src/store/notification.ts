@@ -9,7 +9,7 @@ interface NotificationState {
     message: string;
 }
 
-interface ISetNotification {
+export interface ISetNotification {
     message: string;
     status: boolean;
 }
