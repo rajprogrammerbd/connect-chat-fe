@@ -1,12 +1,13 @@
 import LinkedList from './../Data/LinkedList';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { IUsersName } from '../Types';
 
 // Define a type for the slice state
 interface UserState {
   userName: string;
   accessId: string;
-  connected: string[];
+  connected: IUsersName[];
   userId: string;
   messages?: LinkedList,
   isConnected?: boolean;
@@ -14,10 +15,10 @@ interface UserState {
   isErrorOccured?: boolean;
 }
 
-interface ReceivedMessagePayload {
+export interface ReceivedMessagePayload {
   userName: string;
   accessId: string;
-  connected: string[];
+  connected: IUsersName[];
   userId: string;
   messages: LinkedList;
 }
@@ -54,6 +55,9 @@ export const websocketSlice = createSlice({
     set_isError: (state, action: PayloadAction<boolean>) => {
       state.isErrorOccured = action.payload;
     },
+    update_connected_users: (state, action: PayloadAction<IUsersName[]>) => {
+      state.connected = action.payload;
+    },
     received_message: (state, action: PayloadAction<ReceivedMessagePayload>) => {
       state.accessId = action.payload.accessId;
       state.connected = action.payload.connected;
@@ -63,6 +67,6 @@ export const websocketSlice = createSlice({
   },
 })
 
-export const { default_start, set_isConnected, set_isError, received_message } = websocketSlice.actions;
+export const { default_start, set_isConnected, set_isError, received_message, update_connected_users } = websocketSlice.actions;
 
 export default websocketSlice.reducer;

@@ -1,23 +1,40 @@
-import * as React from 'react';
+import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
+import { io } from "socket.io-client";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
 import NotificationBar from '../NotificationBar';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { received_message, set_isConnected, set_isError } from '../../store';
+import { received_message, set_isConnected, set_isError, update_connected_users } from '../../store';
 import { set_notification } from '../../store/notification';
 import { RootState } from '../../store/store';
 import LinkedList from '../../Data/LinkedList';
+import { IFailedResponse, INewConnectionResponse, IUsersName } from '../../Types';
 
 const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
-
+const socket = io(socketUrl);
 function HomeContainer() {
     const dispatch = useAppDispatch();
+    const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
 
-    const { isShownNotification, isConnected, isErrorOccured } = useAppSelector((state: RootState) => state.websocketReducer);
+    const { isShownNotification, isConnected, isErrorOccured, userId, accessId } = useAppSelector((state: RootState) => state.websocketReducer);
     const { duration, message, status } = useAppSelector((state: RootState) => state.notificationReducer);
+
+    const componentUnmounted = () => {
+        socket.emit('remove_user', { accessId, userId });
+    }
+
+    React.useEffect(() => {
+        socket.on('connect', () => {
+            setIsSocketConnected(true);
+        });
+    
+        socket.on('disconnect', () => {
+            setIsSocketConnected(false);
+        });
+      }, []);
 
     const handleNotificationOpen = (message: string) => {
         dispatch(set_notification({ message, status: true }));
@@ -28,53 +45,58 @@ function HomeContainer() {
     }
 
     const startExistedConnection = (name: string, chatID: string) => {
-        const wss = new WebSocket(socketUrl);
+        if (isSocketConnected) {
+            socket.emit('add_new_existed', name, chatID);
 
-        wss.onopen = function() {
-            wss.send(JSON.stringify({ newConnection: false, name, chatID }));
-
-            wss.onmessage = function(data: any) {
-                const parsed = JSON.parse(data.data);
-
-                if (!parsed.connection) {
-                    dispatch(set_isError(true));                    
-                    handleNotificationOpen(parsed.message);
-                } else {
-                    dispatch(set_isError(false));
-                    if (!isShownNotification) {
-                        dispatch(set_isConnected(true));
-                        handleNotificationOpen(parsed.message);
-                    }
-
-                    dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
+            socket.on('failed_response', (obj: IFailedResponse) => {
+                dispatch(set_isError(true));                    
+                handleNotificationOpen(obj.message);
+            });
+    
+            socket.on('recived_new_existed_user', (obj: INewConnectionResponse) => {
+                socket.emit('join-room', obj.accessId);
+                socket.emit('update-connected-user', obj.userIds, obj.accessId);
+    
+                dispatch(set_isError(false));
+                if (!isShownNotification) {
+                    dispatch(set_isConnected(true));
+                    handleNotificationOpen(obj.message);
                 }
-            }
+    
+                dispatch(received_message({ accessId: obj.accessId, connected: obj.userIds, userId: obj.userId, userName: obj.name, messages: new LinkedList() }));
+            });
         }
     }
 
     const startNewConnection = (name: string) =>  {
-        const wss = new WebSocket(socketUrl);
+        if (isSocketConnected) {
+            socket.emit('new_user', name);
 
-        wss.onopen = function() {
-            wss.send(JSON.stringify({ newConnection: true, name }));
-
-            wss.onmessage = function(data: any) {
-                const parsed = JSON.parse(data.data);
-
-                if (!parsed.connection) {
+            socket.on('updated-connected-users', (obj: IUsersName[]) => {
+                dispatch(update_connected_users(obj));
+            });
+    
+            socket.on("receive_new_connection", (resObj: INewConnectionResponse) => {
+                socket.emit('join-room', resObj.accessId);
+    
+                if (!resObj.connection) {
                     dispatch(set_isError(true));                    
-                    handleNotificationOpen(parsed.message);
+                    handleNotificationOpen(resObj.message);
                 } else {
                     dispatch(set_isError(false));
                     if (!isShownNotification) {
                         dispatch(set_isConnected(true));
-                        handleNotificationOpen(parsed.message);
+                        handleNotificationOpen(resObj.message);
                     }
-
-                    dispatch(received_message({ accessId: parsed.accessId, connected: parsed.userIds, userId: parsed.userId, userName: parsed.name, messages: new LinkedList() }));
+                    dispatch(received_message({ accessId: resObj.accessId, connected: resObj.userIds, userId: resObj.userId, userName: resObj.name, messages: resObj.messages }));
                 }
-            }
+            });
         }
+        /*
+        socket.on("connect", () => {
+            socket.emit('new_user', name);
+        });
+        */
     }
 
     const setDialogLocallyResDefault = () => {
@@ -93,7 +115,7 @@ function HomeContainer() {
                 <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />
             </Container>
       </React.Fragment>
-      );
+    );
 }
 
 export default React.memo(HomeContainer);
