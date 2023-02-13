@@ -77,7 +77,7 @@ function HomeContainer() {
                 connected: obj.userIds,
                 userId: obj.userId,
                 userName: obj.name,
-                messages: new LinkedList(),
+                messages: obj.messages,
                 connectedAccessId: obj.connectedAccessId
             }));
         });
@@ -87,6 +87,7 @@ function HomeContainer() {
         });
 
         socket.on("receive_new_connection", (resObj: INewConnectionResponse) => {
+            console.log('recieved new connection ', resObj);
             if (!resObj.connection) {
                 dispatch(set_isError(true));
                 handleNotificationOpen(resObj.message);

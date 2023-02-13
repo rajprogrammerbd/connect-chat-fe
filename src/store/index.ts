@@ -74,6 +74,7 @@ export const websocketSlice = createSlice({
       state.connected = action.payload.connected;
       state.userId = action.payload.userId;
       state.userName = action.payload.userName;
+      state.messages = action.payload.messages;
       state.accessId = action.payload.accessId;
       state.connectedAccessId = action.payload.connectedAccessId;
     },
