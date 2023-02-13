@@ -1,4 +1,4 @@
-import LinkedList from './../Data/LinkedList';
+import LinkedList, { IValues } from './../Data/LinkedList';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { IUsersName } from '../Types';
@@ -79,12 +79,20 @@ export const websocketSlice = createSlice({
       state.connectedAccessId = action.payload.connectedAccessId;
     },
 
+    update_the_message: (state, action: PayloadAction<LinkedList>) => {
+      state.messages = action.payload;
+    },
+
+    update_total_messages: (state, action: PayloadAction<LinkedList>) => {
+      state.messages = action.payload;
+    },
+
     set_admin: (state, action: PayloadAction<boolean>) => {
       state.isAdmin = action.payload;
     }
   },
 })
 
-export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin } = websocketSlice.actions;
+export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin, update_the_message, update_total_messages } = websocketSlice.actions;
 
 export default websocketSlice.reducer;

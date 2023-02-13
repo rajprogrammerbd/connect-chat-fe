@@ -7,10 +7,10 @@ import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
 import NotificationBar from '../NotificationBar';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { received_message, set_admin, set_isConnected, set_isError, update_connected_users } from '../../store';
+import { received_message, set_admin, set_isConnected, set_isError, update_connected_users, update_total_messages } from '../../store';
 import { set_notification } from '../../store/notification';
 import { RootState } from '../../store/store';
-import LinkedList from '../../Data/LinkedList';
+import LinkedList, { IValues } from '../../Data/LinkedList';
 import { IFailedResponse, INewConnectionResponse, IUsersName } from '../../Types';
 
 const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
@@ -45,6 +45,10 @@ function HomeContainer() {
       }, [isSocketConnected]);
 
       React.useEffect(() => {
+        socket.on('update-all-messages', (msg: LinkedList) => {
+            dispatch(update_total_messages(msg));
+        });
+
         socket.on('refreshed_new_existed_user', (obj: INewConnectionResponse) => {
 
             dispatch(received_message({
@@ -111,6 +115,12 @@ function HomeContainer() {
         });
     }, []);
 
+    const sendMessage = (msg: IValues) => {
+        const id = connectedAccessId === '' ? accessId : connectedAccessId;
+
+        socket.emit('send_message', msg, id);
+    }
+
     const handleNotificationOpen = (message: string) => {
         dispatch(set_notification({ message, status: true }));
     }
@@ -141,7 +151,7 @@ function HomeContainer() {
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
-                        {isConnected ? <ChatBox /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
+                        {isConnected ? <ChatBox sendMessage={sendMessage} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
                 <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />

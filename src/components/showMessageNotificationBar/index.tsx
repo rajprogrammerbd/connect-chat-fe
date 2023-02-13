@@ -8,7 +8,7 @@ const useStyles: any = makeStyles({
     notifyMessage: {
         display: 'block',
         color: "#fff",
-        background: '#1976d2',
+        background: '#66a1db',
         padding: '18px 21px',
         borderRadius: '20px'
     }
@@ -26,7 +26,7 @@ function ShowMessageNotificationBar(props: IProps) {
     return (
         <>
             <Box className={classes.notifyMessage}>
-            <Typography style={{ marginBottom: 0, lineHeight: 0 }} variant="caption" display="block" gutterBottom>{msg.message}</Typography>
+                <Typography style={{ marginBottom: 0, lineHeight: 0 }} variant="caption" display="block" gutterBottom>{msg.message}</Typography>
             </Box>
         </>
     )

@@ -13,6 +13,8 @@ import map from '../../helper';
 import LinkedList, { IValues } from '../../Data/LinkedList';
 import ShowMessageNotificationBar from '../showMessageNotificationBar';
 import MessageBar from '../messageBar';
+import { useDispatch } from 'react-redux';
+import { update_the_message } from '../../store';
 
 type SEVERITY = "error" | "warning" | "info" | "success";
 
@@ -70,16 +72,33 @@ const useStyles: any = makeStyles({
     },
   });
 
+interface IProps {
+    sendMessage: (msg: IValues) => void;
+}
 
-function ChatBox() {
+function ChatBox(props: IProps) {
+    const { sendMessage } = props;
+    const container = React.useRef<HTMLElement>();
+    const inputRef = React.useRef<any>();
+
+    const dispatch = useDispatch();
+
     const { userName, connected, accessId, isAdmin, connectedAccessId, messages, userId } = useAppSelector((state: RootState) => state.websocketReducer);
 
-    React.useEffect(() => {
-        console.log('messages', messages);
-    }, [messages]);
-
     const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
+
     const [accessVisible, setAccessVisible] = React.useState<boolean>(false);
+    const [input, setInput] = React.useState<string>('');
+
+    React.useEffect(() => {
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
+
+        if (container.current) {
+            container.current.scrollTop = container.current.scrollHeight;
+        }
+    });
 
     const openNotification = (message: string, type: SEVERITY) => {
         setNotification({ ...notification, open: true, message, severity: type });
@@ -90,6 +109,44 @@ function ChatBox() {
     }
 
     const classes = useStyles();
+
+    const sendMsg = () => {
+        if (input !== '') {
+            const msg: IValues = {
+                message: input,
+                timeStamp: new Date(),
+                type: 'message',
+                userId,
+                userName
+            };
+
+            const newList = new LinkedList();
+            let current = messages?.head;
+
+            while (current) {
+                newList.push(current.value);
+
+                if (current.next === null) {
+                    newList.push(msg);
+                    break;
+                }
+                current = current.next;
+            }
+
+            setInput('');
+            dispatch(update_the_message(newList));
+            sendMessage(msg);
+        }
+    }
+
+    const keyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (input !== '') {
+            
+            if (event.code === "Enter") {
+                sendMsg();
+            }
+        }
+    }
 
     React.useEffect(() => {
         if (connected.length === 0) {
@@ -120,6 +177,7 @@ function ChatBox() {
 
             <Box
                 className={classes.design_scrollbar}
+                ref={container}
                 sx={{
                     width: 1,
                     height: 1
@@ -136,8 +194,8 @@ function ChatBox() {
 
             <AppBar position="static" sx={{ bottom: 0 }}>
                 <Toolbar sx={{ w: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <input type="text" className={classes.inputBox} placeholder='Enter your message' />
-                    <Button color="inherit">Send</Button>
+                    <input type="text" ref={inputRef} onKeyUp={keyPress} className={classes.inputBox} value={input} onChange={(event) => setInput(event.target.value)} placeholder='Enter your message' />
+                    <Button color="inherit" disabled={input === '' ? true : false} onClick={sendMsg}>Send</Button>
                 </Toolbar>
             </AppBar>
         </Box>
