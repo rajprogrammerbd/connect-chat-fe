@@ -53,7 +53,7 @@ const useStyles: any = makeStyles({
 
 
 function ChatBox() {
-    const { userName, connected, accessId } = useAppSelector((state: RootState) => state.websocketReducer);
+    const { userName, connected, accessId, isAdmin, connectedAccessId } = useAppSelector((state: RootState) => state.websocketReducer);
 
     const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
     const [accessVisible, setAccessVisible] = React.useState<boolean>(false);
@@ -128,7 +128,7 @@ function ChatBox() {
                     Access ID
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {accessId}
+                    {isAdmin ? accessId : connectedAccessId}
                 </Typography>
         </Box>
       </Modal>

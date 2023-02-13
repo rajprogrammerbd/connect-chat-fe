@@ -1,4 +1,7 @@
+type Msg_Type = "message" | "user_joined" | "user_removed" | "unknown";
+
 export type IValues = {
+    type: Msg_Type;
     userName: string;
     userId: string;
     message: string;

@@ -13,6 +13,13 @@ interface UserState {
   isConnected?: boolean;
   isShownNotification?: boolean;
   isErrorOccured?: boolean;
+  isAdmin: boolean;
+  connectedAccessId: string;
+}
+
+interface IUpdateConnectedUser {
+  obj: IUsersName[];
+  msg: LinkedList;
 }
 
 export interface ReceivedMessagePayload {
@@ -21,6 +28,7 @@ export interface ReceivedMessagePayload {
   connected: IUsersName[];
   userId: string;
   messages: LinkedList;
+  connectedAccessId: string;
 }
 
 const list = new LinkedList();
@@ -34,7 +42,9 @@ const initialState: UserState = {
   messages: list,
   isConnected: false,
   isShownNotification: false,
-  isErrorOccured: false
+  isErrorOccured: false,
+  isAdmin: false,
+  connectedAccessId: ''
 }
 
 export const websocketSlice = createSlice({
@@ -55,18 +65,25 @@ export const websocketSlice = createSlice({
     set_isError: (state, action: PayloadAction<boolean>) => {
       state.isErrorOccured = action.payload;
     },
-    update_connected_users: (state, action: PayloadAction<IUsersName[]>) => {
-      state.connected = action.payload;
+    update_connected_users: (state, action: PayloadAction<IUpdateConnectedUser>) => {
+      state.connected = action.payload.obj;
+      state.messages = action.payload.msg;
     },
     received_message: (state, action: PayloadAction<ReceivedMessagePayload>) => {
       state.accessId = action.payload.accessId;
       state.connected = action.payload.connected;
+      state.userId = action.payload.userId;
       state.userName = action.payload.userName;
       state.accessId = action.payload.accessId;
+      state.connectedAccessId = action.payload.connectedAccessId;
+    },
+
+    set_admin: (state, action: PayloadAction<boolean>) => {
+      state.isAdmin = action.payload;
     }
   },
 })
 
-export const { default_start, set_isConnected, set_isError, received_message, update_connected_users } = websocketSlice.actions;
+export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin } = websocketSlice.actions;
 
 export default websocketSlice.reducer;
