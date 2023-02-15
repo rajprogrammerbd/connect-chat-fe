@@ -72,12 +72,18 @@ const useStyles: any = makeStyles({
     },
   });
 
+interface IUserType {
+    status: boolean;
+    id: string;
+}
+
 interface IProps {
     sendMessage: (msg: IValues) => void;
+    userTypingFn: (obj: IUserType) => void;
 }
 
 function ChatBox(props: IProps) {
-    const { sendMessage } = props;
+    const { sendMessage, userTypingFn } = props;
     const container = React.useRef<HTMLElement>();
     const inputRef = React.useRef<any>();
 
@@ -85,10 +91,17 @@ function ChatBox(props: IProps) {
 
     const { userName, connected, accessId, isAdmin, connectedAccessId, messages, userId } = useAppSelector((state: RootState) => state.websocketReducer);
 
+    const id = `${userName}-${userId}`;
+
     const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
+    const [userTyping, setUserTyping] = React.useState<IUserType>({ status: false, id: `${userName}-${userId}` });
 
     const [accessVisible, setAccessVisible] = React.useState<boolean>(false);
     const [input, setInput] = React.useState<string>('');
+
+    React.useEffect(() => {
+        userTypingFn(userTyping);
+    }, [userTyping]);
 
     React.useEffect(() => {
         if (inputRef.current) {
@@ -134,6 +147,7 @@ function ChatBox(props: IProps) {
             }
 
             setInput('');
+            setUserTyping({ ...userTyping, status: false });
             dispatch(update_the_message(newList));
             sendMessage(msg);
         }
@@ -141,8 +155,7 @@ function ChatBox(props: IProps) {
 
     const keyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (input !== '') {
-            
-            if (event.code === "Enter") {
+                if (event.code === "Enter") {
                 sendMsg();
             }
         }
@@ -161,6 +174,17 @@ function ChatBox(props: IProps) {
     }, [connected]);
 
 
+    const onChangeInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+
+        if (value !== '') {
+            setUserTyping({ ...userTyping, status: true });
+        } else {
+            setUserTyping({ ...userTyping, status: false });
+        }
+
+        setInput(value);
+    }
 
     return (
         <>
@@ -185,16 +209,18 @@ function ChatBox(props: IProps) {
             >
                 {/* Chats going to appear in here */}
                 {map(messages as LinkedList).map((obj: IValues, index) => (
-                    <Box key={index} className={classes.common} sx={{ w: 1, h: '30px', justifyContent: (obj.type !== 'message') ? 'center' : (obj.type === 'message' && userId === obj.userId) ? "flex-start" : "flex-end" }}>
+                    obj.type !== 'typing' || (obj.type === 'typing' && obj.typingId !== id) ? (
+                        <Box key={index} className={classes.common} sx={{ justifyContent: (obj.type !== 'message' && obj.type !== 'typing') ? 'center' : ((obj.type === 'message' || obj.type === 'typing') && userId === obj.userId) ? "flex-start" : "flex-end" }}>
                         {obj.type !== 'message' ? <ShowMessageNotificationBar msg={obj} /> : <MessageBar msg={obj} />}
                     </Box>
+                    ) : null
                 ))}
             </Box>
 
 
             <AppBar position="static" sx={{ bottom: 0 }}>
                 <Toolbar sx={{ w: 1, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                    <input type="text" ref={inputRef} onKeyUp={keyPress} className={classes.inputBox} value={input} onChange={(event) => setInput(event.target.value)} placeholder='Enter your message' />
+                    <input type="text" ref={inputRef} onKeyUp={keyPress} className={classes.inputBox} value={input} onChange={onChangeInputValue} placeholder='Enter your message' />
                     <Button color="inherit" disabled={input === '' ? true : false} onClick={sendMsg}>Send</Button>
                 </Toolbar>
             </AppBar>

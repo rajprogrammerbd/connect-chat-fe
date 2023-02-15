@@ -19,11 +19,16 @@ function HomeContainer() {
     const dispatch = useAppDispatch();
     const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
 
-    const { isShownNotification, isConnected, isErrorOccured, userId, accessId, connectedAccessId } = useAppSelector((state: RootState) => state.websocketReducer);
+    const { userName, isShownNotification, isConnected, isErrorOccured, userId, accessId, connectedAccessId } = useAppSelector((state: RootState) => state.websocketReducer);
     const { duration, message, status } = useAppSelector((state: RootState) => state.notificationReducer);
 
     const componentUnmounted = () => {
         socket.emit('remove_user', { accessId, userId });
+    }
+
+    const userTypingFn = (obj: { status: boolean; id: string }) => {
+        const id = connectedAccessId === '' ? accessId : connectedAccessId;
+        socket.emit('user_typing_message_status', obj, userId, id, userName);
     }
 
     React.useEffect(() => {
@@ -45,6 +50,10 @@ function HomeContainer() {
       }, [isSocketConnected]);
 
       React.useEffect(() => {
+        socket.on('responding-typing-message', (msg: LinkedList) => {
+            dispatch(update_total_messages(msg));
+        });
+
         socket.on('update-all-messages', (msg: LinkedList) => {
             dispatch(update_total_messages(msg));
         });
@@ -151,7 +160,7 @@ function HomeContainer() {
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
-                        {isConnected ? <ChatBox sendMessage={sendMessage} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
+                        {isConnected ? <ChatBox userTypingFn={userTypingFn} sendMessage={sendMessage} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
                 <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />
