@@ -33,6 +33,7 @@ function HomeContainer() {
 
     React.useEffect(() => {
         socket.on('connect', () => {
+            console.log('socket id', socket.id);
             setIsSocketConnected(true);
         });
     
