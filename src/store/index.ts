@@ -22,6 +22,11 @@ interface IUpdateConnectedUser {
   msg: LinkedList;
 }
 
+interface IUpdateMsgAndUsers {
+  msg: LinkedList;
+  users: IUsersName[];
+}
+
 export interface ReceivedMessagePayload {
   userName: string;
   accessId: string;
@@ -89,10 +94,15 @@ export const websocketSlice = createSlice({
 
     set_admin: (state, action: PayloadAction<boolean>) => {
       state.isAdmin = action.payload;
+    },
+
+    update_message_and_connectedUser: (state, action: PayloadAction<IUpdateMsgAndUsers>) => {
+      state.messages = action.payload.msg;
+      state.connected = action.payload.users;
     }
   },
 })
 
-export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin, update_the_message, update_total_messages } = websocketSlice.actions;
+export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin, update_the_message, update_total_messages, update_message_and_connectedUser } = websocketSlice.actions;
 
 export default websocketSlice.reducer;

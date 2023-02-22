@@ -1,30 +1,26 @@
 import React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import { io } from "socket.io-client";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
 import NotificationBar from '../NotificationBar';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { received_message, set_admin, set_isConnected, set_isError, update_connected_users, update_total_messages } from '../../store';
+import { received_message, set_admin, set_isConnected, set_isError, update_connected_users, update_message_and_connectedUser, update_total_messages } from '../../store';
 import { set_notification } from '../../store/notification';
 import { RootState } from '../../store/store';
 import LinkedList, { IValues } from '../../Data/LinkedList';
 import { IFailedResponse, INewConnectionResponse, IUsersName } from '../../Types';
+import { SocketConnection } from '../../App';
 
-const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
-const socket = io(socketUrl);
 function HomeContainer() {
+    const socket = React.useContext(SocketConnection);
+
     const dispatch = useAppDispatch();
     const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
 
     const { userName, isShownNotification, isConnected, isErrorOccured, userId, accessId, connectedAccessId } = useAppSelector((state: RootState) => state.websocketReducer);
     const { duration, message, status } = useAppSelector((state: RootState) => state.notificationReducer);
-
-    const componentUnmounted = () => {
-        socket.emit('remove_user', { accessId, userId });
-    }
 
     const userTypingFn = (obj: { status: boolean; id: string }) => {
         const id = connectedAccessId === '' ? accessId : connectedAccessId;
@@ -57,6 +53,10 @@ function HomeContainer() {
 
         socket.on('update-all-messages', (msg: LinkedList) => {
             dispatch(update_total_messages(msg));
+        });
+
+        socket.on('update-message-connectedUser', (msg: LinkedList, user: IUsersName[]) => {
+            dispatch(update_message_and_connectedUser({ msg, users: user }));
         });
 
         socket.on('refreshed_new_existed_user', (obj: INewConnectionResponse) => {

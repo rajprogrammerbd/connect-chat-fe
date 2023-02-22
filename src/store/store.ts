@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import websocketReducer from './index';
 import notificationReducer from './notification';
+import socketSlice from './socket';
 import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session';
 
@@ -11,7 +12,8 @@ const persistConfig = {
 
 const combine = combineReducers({
   websocketReducer,
-  notificationReducer
+  notificationReducer,
+  socketSlice
 });
 
 const persistedReducer = persistReducer(persistConfig, combine);
