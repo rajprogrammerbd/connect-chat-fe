@@ -4,14 +4,13 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import QuestionBox from '../QuestionBox';
 import ChatBox from '../chatBox';
-import NotificationBar from '../NotificationBar';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { received_message, set_admin, set_isConnected, set_isError, update_connected_users, update_message_and_connectedUser, update_total_messages } from '../../store';
-import { set_notification } from '../../store/notification';
 import { RootState } from '../../store/store';
 import LinkedList, { IValues } from '../../Data/LinkedList';
 import { IFailedResponse, INewConnectionResponse, IUsersName } from '../../Types';
 import { SocketConnection } from '../../App';
+import cogoToast from 'cogo-toast';
 
 function HomeContainer() {
     const socket = React.useContext(SocketConnection);
@@ -20,7 +19,6 @@ function HomeContainer() {
     const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
 
     const { userName, isShownNotification, isConnected, isErrorOccured, userId, accessId, connectedAccessId } = useAppSelector((state: RootState) => state.websocketReducer);
-    const { duration, message, status } = useAppSelector((state: RootState) => state.notificationReducer);
 
     const userTypingFn = (obj: { status: boolean; id: string }) => {
         const id = connectedAccessId === '' ? accessId : connectedAccessId;
@@ -29,7 +27,6 @@ function HomeContainer() {
 
     React.useEffect(() => {
         socket.on('connect', () => {
-            console.log('socket id', socket.id);
             setIsSocketConnected(true);
         });
     
@@ -73,7 +70,7 @@ function HomeContainer() {
 
          socket.on('failed_response', (obj: IFailedResponse) => {
             dispatch(set_isError(true));                    
-            handleNotificationOpen(obj.message);
+            handleNotificationOpen(obj.message, true);
         });
 
         socket.on('recived_new_existed_user', (obj: INewConnectionResponse) => {
@@ -83,7 +80,7 @@ function HomeContainer() {
             dispatch(set_isError(false));
             if (!isShownNotification) {
                 dispatch(set_isConnected(true));
-                handleNotificationOpen(obj.message);
+                handleNotificationOpen(obj.message, false);
             }
             dispatch(set_admin(false));
             dispatch(received_message({
@@ -104,12 +101,12 @@ function HomeContainer() {
             console.log('recieved new connection ', resObj);
             if (!resObj.connection) {
                 dispatch(set_isError(true));
-                handleNotificationOpen(resObj.message);
+                handleNotificationOpen(resObj.message, true);
             } else {
                 dispatch(set_isError(false));
                 if (!isShownNotification) {
                     dispatch(set_isConnected(true));
-                    handleNotificationOpen(resObj.message);
+                    handleNotificationOpen(resObj.message, false);
                 }
                 dispatch(set_admin(true));
 
@@ -131,12 +128,14 @@ function HomeContainer() {
         socket.emit('send_message', msg, id);
     }
 
-    const handleNotificationOpen = (message: string) => {
-        dispatch(set_notification({ message, status: true }));
-    }
-
-    const closeNotification = () => {
-        dispatch(set_notification({ message: '', status: false }));
+    const handleNotificationOpen = (message: string, isError: boolean) => {
+        const { hide } = cogoToast[isError ? "error": "success"](message, {
+            onClick: () => {
+                if (hide) {
+                    hide();
+                }
+            },
+        });
     }
 
     const startExistedConnection = (name: string, chatID: string) => {
@@ -164,7 +163,6 @@ function HomeContainer() {
                         {isConnected ? <ChatBox userTypingFn={userTypingFn} sendMessage={sendMessage} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
-                <NotificationBar duration={duration} handleClose={closeNotification} message={message} severity={"success"} open={status} />
             </Container>
       </React.Fragment>
     );

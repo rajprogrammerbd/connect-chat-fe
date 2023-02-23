@@ -5,7 +5,6 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import NotificationBar from '../NotificationBar';
 import { useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { Modal } from '@mui/material';
@@ -15,15 +14,7 @@ import ShowMessageNotificationBar from '../showMessageNotificationBar';
 import MessageBar from '../messageBar';
 import { useDispatch } from 'react-redux';
 import { update_the_message } from '../../store';
-
-type SEVERITY = "error" | "warning" | "info" | "success";
-
-interface INotificationBar {
-    open: boolean;
-    message: string;
-    duration: number;
-    severity: SEVERITY;
-}
+import cogoToast from 'cogo-toast';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -48,7 +39,6 @@ const useStyles: any = makeStyles({
     common: {
         backgroundColor: 'inherit',
         display: 'flex',
-        // border: '1px solid #ddd',
         flexDirection: 'row',
         alignItems: 'center',
         padding: '10px 15px 10px 15px'
@@ -93,7 +83,6 @@ function ChatBox(props: IProps) {
 
     const id = `${userName}-${userId}`;
 
-    const [notification, setNotification] = React.useState<INotificationBar>({ open: false, message: '', duration: 2000, severity: 'warning' });
     const [userTyping, setUserTyping] = React.useState<IUserType>({ status: false, id: `${userName}-${userId}` });
 
     const [accessVisible, setAccessVisible] = React.useState<boolean>(false);
@@ -113,12 +102,14 @@ function ChatBox(props: IProps) {
         }
     });
 
-    const openNotification = (message: string, type: SEVERITY) => {
-        setNotification({ ...notification, open: true, message, severity: type });
-    }
-
-    const closeNotification = () => {
-        setNotification({ ...notification, open: false });
+    const openNotification = (message: string) => {
+        const { hide } = cogoToast.warn(message, {
+            onClick: () => {
+                if (hide) {
+                    hide();
+                }
+            },
+        });
     }
 
     const classes = useStyles();
@@ -164,7 +155,7 @@ function ChatBox(props: IProps) {
     React.useEffect(() => {
         if (connected.length === 0) {
             const timeout = window.setTimeout(() => {
-                openNotification('Still one is available on the chat', 'warning');
+                openNotification('Still one is available on the chat');
             }, 10000);
 
             return () => {
@@ -226,7 +217,6 @@ function ChatBox(props: IProps) {
             </AppBar>
         </Box>
 
-        <NotificationBar duration={notification.duration} handleClose={closeNotification} message={notification.message} open={notification.open} severity={notification.severity} />
         <Modal
             open={accessVisible}
             onClose={() => setAccessVisible(false)}

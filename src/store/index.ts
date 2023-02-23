@@ -56,6 +56,18 @@ export const websocketSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
+    reset_websocket: (state, action) => {
+      state.userName = initialState.userName;
+      state.accessId = initialState.accessId;
+      state.connected = initialState.connected;
+      state.userId = initialState.userId;
+      state.messages = initialState.messages;
+      state.isConnected = initialState.isConnected;
+      state.isShownNotification = initialState.isShownNotification;
+      state.isErrorOccured = initialState.isErrorOccured;
+      state.isAdmin = initialState.isAdmin;
+      state.connectedAccessId = initialState.connectedAccessId;
+    },
     default_start: (state, action: PayloadAction<UserState>) => {
       state.accessId = action.payload.accessId;
       state.connected = action.payload.connected;
@@ -103,6 +115,17 @@ export const websocketSlice = createSlice({
   },
 })
 
-export const { default_start, set_isConnected, set_isError, received_message, update_connected_users, set_admin, update_the_message, update_total_messages, update_message_and_connectedUser } = websocketSlice.actions;
+export const {
+  reset_websocket,
+  default_start,
+  set_isConnected,
+  set_isError,
+  received_message,
+  update_connected_users,
+  set_admin,
+  update_the_message,
+  update_total_messages,
+  update_message_and_connectedUser
+} = websocketSlice.actions;
 
 export default websocketSlice.reducer;
