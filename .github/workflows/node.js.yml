@@ -30,5 +30,4 @@ jobs:
     - run: yarn run build
     - run: yarn run test:nowatch
     - run: docker build -t connect-chat-fe .
-    - run: docker run connect-chat-fe
     - run: curl -X POST ${{ secrets.BUILD_NETLIFY }}
