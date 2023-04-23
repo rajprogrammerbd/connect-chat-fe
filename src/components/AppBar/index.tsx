@@ -7,7 +7,7 @@ import textFinder from '../assets/static-texts';
 import { useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { Button, IconButton, Modal } from '@mui/material';
-import { IUsersName } from '../../Types';
+import { IUser } from '../../Types';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -22,7 +22,7 @@ const style = {
 };
 
 function AppBarContainer() {
-  const { isConnected, connected } = useAppSelector((state: RootState) => state.websocketReducer);
+  const { isConnected, connectedUsersList } = useAppSelector((state: RootState) => state.user);
   const [showModal, setShowModal] = React.useState<boolean>(false);
 
   return (
@@ -32,7 +32,7 @@ function AppBarContainer() {
            <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>
             {textFinder('appName')}
           </Typography>
-          {isConnected ? <Button color="inherit" onClick={() => setShowModal(true)}>Connected: {connected.length}</Button> : null}
+          {isConnected ? <Button color="inherit" onClick={() => setShowModal(true)}>Connected: {connectedUsersList.length}</Button> : null}
         </Toolbar>
       </AppBar>
 
@@ -47,7 +47,7 @@ function AppBarContainer() {
                     Users name:
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {connected.map((connectObj: IUsersName) => <Typography key={connectObj.userId} variant='h6' color="inherit">{connectObj.name}</Typography>)}
+                    {connectedUsersList.map((connectUser: IUser) => <Typography key={connectUser.userId} variant='h6' color="inherit">{connectUser.userName}</Typography>)}
                 </Typography>
         </Box>
       </Modal>

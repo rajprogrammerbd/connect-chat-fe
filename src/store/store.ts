@@ -1,8 +1,8 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import websocketReducer from './index';
-import socketSlice from './socket';
 import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session';
+import userSlice from '.';
+
 
 const persistConfig = {
   key: 'root',
@@ -10,8 +10,7 @@ const persistConfig = {
 }
 
 const combine = combineReducers({
-  websocketReducer,
-  socketSlice
+  user: userSlice.reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, combine);

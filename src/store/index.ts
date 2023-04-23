@@ -1,131 +1,60 @@
-import LinkedList, { IValues } from './../Data/LinkedList';
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { IUsersName } from '../Types';
+import { IMsg, IUser, ReceivedMessagePayload } from '../Types';
 
 // Define a type for the slice state
 interface UserState {
-  userName: string;
-  accessId: string;
-  connected: IUsersName[];
-  userId: string;
-  messages?: LinkedList,
-  isConnected?: boolean;
-  isShownNotification?: boolean;
-  isErrorOccured?: boolean;
-  isAdmin: boolean;
-  connectedAccessId: string;
+  isConnected: boolean;
+  connectedUsersList: IUser[];
+  isShownNotification: boolean;
+  name?: string;
+  isErrorOccured: boolean;
+  userId?: string;
+  chatId?: string;
+  isAdmin?: boolean;
+  messages?: IMsg[];
 }
-
-interface IUpdateConnectedUser {
-  obj: IUsersName[];
-  msg: LinkedList;
-}
-
-interface IUpdateMsgAndUsers {
-  msg: LinkedList;
-  users: IUsersName[];
-}
-
-export interface ReceivedMessagePayload {
-  userName: string;
-  accessId: string;
-  connected: IUsersName[];
-  userId: string;
-  messages: LinkedList;
-  connectedAccessId: string;
-}
-
-const list = new LinkedList();
 
 // Define the initial state using that type
 const initialState: UserState = {
-  userName: '',
-  accessId: '',
-  connected: [],
-  userId: '',
-  messages: list,
   isConnected: false,
+  connectedUsersList: [],
   isShownNotification: false,
-  isErrorOccured: false,
-  isAdmin: false,
-  connectedAccessId: ''
+  isErrorOccured: false
 }
 
-export const websocketSlice = createSlice({
+export const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    reset_websocket: (state, action) => {
-      state.userName = initialState.userName;
-      state.accessId = initialState.accessId;
-      state.connected = initialState.connected;
-      state.userId = initialState.userId;
-      state.messages = initialState.messages;
-      state.isConnected = initialState.isConnected;
-      state.isShownNotification = initialState.isShownNotification;
-      state.isErrorOccured = initialState.isErrorOccured;
-      state.isAdmin = initialState.isAdmin;
-      state.connectedAccessId = initialState.connectedAccessId;
+    set_isError(state, action: PayloadAction<boolean>) {
+      state.isErrorOccured = action.payload;
     },
-    default_start: (state, action: PayloadAction<UserState>) => {
-      state.accessId = action.payload.accessId;
-      state.connected = action.payload.connected;
-      action.payload.messages ? state.messages = action.payload.messages : null;
-      state.userName = action.payload.userName;
-      state.accessId = action.payload.accessId;
-    },
-
     set_isConnected: (state, action: PayloadAction<boolean>) => {
       state.isConnected = action.payload;
     },
-    set_isError: (state, action: PayloadAction<boolean>) => {
-      state.isErrorOccured = action.payload;
+    update_total_messages: (state, action: PayloadAction<IMsg[]>) => {
+      state.messages = action.payload;
     },
-    update_connected_users: (state, action: PayloadAction<IUpdateConnectedUser>) => {
-      state.connected = action.payload.obj;
-      state.messages = action.payload.msg;
+    add_message: (state, action: PayloadAction<IMsg>) => {
+      state.messages?.push(action.payload);  
     },
     received_message: (state, action: PayloadAction<ReceivedMessagePayload>) => {
-      state.accessId = action.payload.accessId;
-      state.connected = action.payload.connected;
-      state.userId = action.payload.userId;
-      state.userName = action.payload.userName;
-      state.messages = action.payload.messages;
-      state.accessId = action.payload.accessId;
-      state.connectedAccessId = action.payload.connectedAccessId;
+      state.chatId = action.payload.chatId;
+      state.connectedUsersList = action.payload.connectedUsersList;
+      if (action.payload.isAdmin !== undefined) {
+        state.isAdmin = action.payload.isAdmin;
+        state.messages = action.payload.messages;
+        state.name = action.payload.name;
+        state.userId = action.payload.userId;
+      }
     },
-
-    update_the_message: (state, action: PayloadAction<LinkedList>) => {
-      state.messages = action.payload;
-    },
-
-    update_total_messages: (state, action: PayloadAction<LinkedList>) => {
-      state.messages = action.payload;
-    },
-
-    set_admin: (state, action: PayloadAction<boolean>) => {
-      state.isAdmin = action.payload;
-    },
-
-    update_message_and_connectedUser: (state, action: PayloadAction<IUpdateMsgAndUsers>) => {
-      state.messages = action.payload.msg;
-      state.connected = action.payload.users;
+    add_new_user_update: (state, action: PayloadAction<IUser[]>) => {
+      state.connectedUsersList = action.payload;
     }
   },
-})
+});
 
-export const {
-  reset_websocket,
-  default_start,
-  set_isConnected,
-  set_isError,
-  received_message,
-  update_connected_users,
-  set_admin,
-  update_the_message,
-  update_total_messages,
-  update_message_and_connectedUser
-} = websocketSlice.actions;
+export const { set_isError, set_isConnected, received_message, update_total_messages, add_message, add_new_user_update } = userSlice.actions;
 
-export default websocketSlice.reducer;
+export default userSlice;

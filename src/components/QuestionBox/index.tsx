@@ -29,6 +29,10 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
         }
     }
 
+    componentDidMount(): void {
+        console.log('state ', this.state);
+    }
+
 
     static getDerivedStateFromProps(props: IProps, state: IDialogState) {
         if (!props.canOpen && props.canOpen !== undefined) {
@@ -57,7 +61,7 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
         this.setState({ ...this.state, openDialog: false });
     }
 
-    formSubmitted = (event: any) => {
+    formSubmitted = (event: any): void => {
         const { name, chatID } = event;
 
         if (this.state.forNewUser) {
@@ -67,7 +71,6 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
 
         this.props.startExistedConnection(name, chatID);
         return;
-
     }
 
     render() {

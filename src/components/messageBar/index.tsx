@@ -1,9 +1,9 @@
 import React from 'react';
-import { IValues } from '../../Data/LinkedList';
 import { makeStyles } from '@mui/styles';
 import { Box, Typography } from '@mui/material';
 import { useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
+import { IMsg } from '../../Types';
 
 const useStyles: any = makeStyles({
     textWrapper: {
@@ -20,20 +20,20 @@ const useStyles: any = makeStyles({
   });
 
 interface IProps {
-    msg: IValues;
+    msg: IMsg;
 }
 
 function MessageBar(props: IProps) {
-    const { userId } = useAppSelector((state: RootState) => state.websocketReducer);
-    const { msg } = props;
+    const { userId } = useAppSelector((state: RootState) => state.user);
+    const { chatId, message, timestamp, userName } = props.msg;
     const classes = useStyles();
 
     return (
         <>
-            <Box className={classes.textWrapper} sx={{ alignItems: (msg.userId === userId) ? 'flex-start' : 'flex-end' }}>
-                <Typography variant="caption" display="block" gutterBottom>{msg.userName}</Typography>
-                <Typography className={classes.text} variant="body1" gutterBottom>{msg.message}</Typography>
-                <Typography variant="caption" display="block" gutterBottom>{new Date(msg.timeStamp).toISOString()}</Typography>
+            <Box className={classes.textWrapper} sx={{ alignItems: (props.msg.userId === userId) ? 'flex-start' : 'flex-end' }}>
+                <Typography variant="caption" display="block" gutterBottom>{userName}</Typography>
+                <Typography className={classes.text} variant="body1" gutterBottom>{message}</Typography>
+                <Typography variant="caption" display="block" gutterBottom>{new Date(timestamp).toISOString()}</Typography>
             </Box>
         </>
     );

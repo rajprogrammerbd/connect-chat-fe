@@ -5,16 +5,14 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { Modal } from '@mui/material';
-import map from '../../helper';
-import LinkedList, { IValues } from '../../Data/LinkedList';
 import ShowMessageNotificationBar from '../showMessageNotificationBar';
 import MessageBar from '../messageBar';
-import { useDispatch } from 'react-redux';
-import { update_the_message } from '../../store';
 import cogoToast from 'cogo-toast';
+import { IMsg, ISendMsgType, Msg_Types } from '../../Types';
+import { add_message } from '../../store';
 
 const style = {
     position: 'absolute' as 'absolute',
@@ -62,35 +60,30 @@ const useStyles: any = makeStyles({
     },
   });
 
-interface IUserType {
-    status: boolean;
-    id: string;
-}
-
 interface IProps {
-    sendMessage: (msg: IValues) => void;
-    userTypingFn: (obj: IUserType) => void;
+    sendMessage: (msg: any /* IValues */) => void;
+    userTypingStart: (chatId: string, userId: string) => void;
+    userTypingStop: (chatId: string, userId: string) => void;
 }
 
 function ChatBox(props: IProps) {
-    const { sendMessage, userTypingFn } = props;
+    const dispatch = useAppDispatch();
+    const { sendMessage, userTypingStart, userTypingStop } = props;
     const container = React.useRef<HTMLElement>();
     const inputRef = React.useRef<any>();
 
-    const dispatch = useDispatch();
-
-    const { userName, connected, accessId, isAdmin, connectedAccessId, messages, userId } = useAppSelector((state: RootState) => state.websocketReducer);
-
-    const id = `${userName}-${userId}`;
-
-    const [userTyping, setUserTyping] = React.useState<IUserType>({ status: false, id: `${userName}-${userId}` });
+    const { name, connectedUsersList, chatId, messages, userId } = useAppSelector((state: RootState) => state.user);
 
     const [accessVisible, setAccessVisible] = React.useState<boolean>(false);
     const [input, setInput] = React.useState<string>('');
 
     React.useEffect(() => {
-        userTypingFn(userTyping);
-    }, [userTyping]);
+        if (input === '') {
+            userTypingStop(chatId ? chatId : '', userId ? userId : '');
+        } else {
+            userTypingStart(chatId ? chatId : '', userId ? userId : '');
+        }
+    }, [input]);
 
     React.useEffect(() => {
         if (inputRef.current) {
@@ -116,30 +109,21 @@ function ChatBox(props: IProps) {
 
     const sendMsg = () => {
         if (input !== '') {
-            const msg: IValues = {
-                message: input,
-                timeStamp: new Date(),
-                type: 'message',
-                userId,
-                userName
+            const msg: ISendMsgType = {
+                msg: input,
+                userId: userId ? userId : '',
+                chatId: chatId ? chatId : ''
             };
 
-            const newList = new LinkedList();
-            let current = messages?.head;
-
-            while (current) {
-                newList.push(current.value);
-
-                if (current.next === null) {
-                    newList.push(msg);
-                    break;
-                }
-                current = current.next;
-            }
-
             setInput('');
-            setUserTyping({ ...userTyping, status: false });
-            dispatch(update_the_message(newList));
+            dispatch(add_message({
+                type: Msg_Types.msg,
+                chatId: chatId ? chatId : '',
+                userName: name ? name : '',
+                userId: userId ? userId : '',
+                message: input,
+                timestamp: new Date()
+            }));
             sendMessage(msg);
         }
     }
@@ -153,7 +137,7 @@ function ChatBox(props: IProps) {
     }
 
     React.useEffect(() => {
-        if (connected.length === 0) {
+        if (connectedUsersList.length === 0) {
             const timeout = window.setTimeout(() => {
                 openNotification('Still one is available on the chat');
             }, 10000);
@@ -162,28 +146,22 @@ function ChatBox(props: IProps) {
                 window.clearTimeout(timeout);
             }
         }
-    }, [connected]);
+    }, [connectedUsersList]);
 
 
     const onChangeInputValue = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
 
-        if (value !== '') {
-            setUserTyping({ ...userTyping, status: true });
-        } else {
-            setUserTyping({ ...userTyping, status: false });
-        }
-
         setInput(value);
     }
-
+    console.log('messages ', messages);
     return (
         <>
             <Box sx={{ width: 1, height: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
             <AppBar position="static">
                     <Toolbar>
                         <Typography variant="h6" component="div" sx={{ flexGrow: 1, textTransform: 'uppercase', fontWeight: 'bold' }}>
-                            {userName}
+                            {name}
                         </Typography>
                         <Button color="inherit" size="small" onClick={() => setAccessVisible(true)}>Access ID</Button>
                     </Toolbar>
@@ -199,12 +177,12 @@ function ChatBox(props: IProps) {
                 }}
             >
                 {/* Chats going to appear in here */}
-                {map(messages as LinkedList).map((obj: IValues, index) => (
-                    obj.type !== 'typing' || (obj.type === 'typing' && obj.typingId !== id) ? (
-                        <Box key={index} className={classes.common} sx={{ justifyContent: (obj.type !== 'message' && obj.type !== 'typing') ? 'center' : ((obj.type === 'message' || obj.type === 'typing') && userId === obj.userId) ? "flex-start" : "flex-end" }}>
-                        {obj.type !== 'message' ? <ShowMessageNotificationBar msg={obj} /> : <MessageBar msg={obj} />}
+                {messages?.map((obj: IMsg, index) => (
+                    (obj.type === 'typing' && obj.userId === userId) ? null : (
+                        <Box key={index} className={classes.common} sx={{ justifyContent: (obj.type !== 'message' && obj.type !== Msg_Types.typing) ? 'center' : ((obj.type === 'message' || obj.type === 'typing') && userId === obj.userId) ? "flex-start" : "flex-end" }}>
+                        {obj.type !== 'message' ? <ShowMessageNotificationBar msg={obj}/> : <MessageBar msg={obj} />}
                     </Box>
-                    ) : null
+                    )
                 ))}
             </Box>
 
@@ -228,7 +206,7 @@ function ChatBox(props: IProps) {
                     Access ID
                 </Typography>
                 <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    {isAdmin ? accessId : connectedAccessId}
+                    {chatId}
                 </Typography>
         </Box>
       </Modal>
