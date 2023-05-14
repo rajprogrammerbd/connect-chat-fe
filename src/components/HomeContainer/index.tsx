@@ -65,7 +65,7 @@ function HomeContainer() {
         });
 
         socket.on('add_new_user_update', (obj: IUser[], msg: IMsg[]) => {
-            console.log('add_new_user_update', obj, msg);
+
             dispatch(add_new_user_update(obj));
             dispatch(update_total_messages(msg));
         });
@@ -103,8 +103,6 @@ function HomeContainer() {
         */
 
         socket.on('recived_new_existed_user', (obj: IReciveUser) => {
-            console.log('recived_new_existed_user', obj);
-
             // socket.emit('update-connected-user', obj.userIds, obj.connectedAccessId === '' ? obj.accessId : obj.connectedAccessId);
 
             dispatch(set_isError(false));

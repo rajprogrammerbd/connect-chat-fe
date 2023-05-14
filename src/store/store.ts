@@ -16,7 +16,7 @@ const combine = combineReducers({
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
   if (action.type === 'user/reset_users') {
     sessionStorage.removeItem('persist:root')
-    console.log('this running now', sessionStorage.getItem('persist:root'))
+
     state = {} as RootState
   }
   return combine(state, action);

@@ -30,10 +30,6 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
         }
     }
 
-    componentDidMount(): void {
-        // console.log('state ', this.state);
-    }
-
 
     static getDerivedStateFromProps(props: IProps, state: IDialogState) {
         if (!props.canOpen && props.canOpen !== undefined) {
