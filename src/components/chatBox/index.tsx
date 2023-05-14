@@ -177,7 +177,7 @@ function ChatBox(props: IProps) {
                 }}
             >
                 {/* Chats going to appear in here */}
-                {messages?.map((obj: IMsg, index) => (
+                {messages?.map((obj: IMsg, index: number) => (
                     (obj.type === 'typing' && obj.userId === userId) ? null : (
                         <Box key={index} className={classes.common} sx={{ justifyContent: (obj.type !== 'message' && obj.type !== Msg_Types.typing) ? 'center' : ((obj.type === 'message' || obj.type === 'typing') && userId === obj.userId) ? "flex-start" : "flex-end" }}>
                         {obj.type !== 'message' ? <ShowMessageNotificationBar msg={obj}/> : <MessageBar msg={obj} />}
