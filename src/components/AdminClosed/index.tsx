@@ -1,18 +1,18 @@
 import React from 'react';
 import { CssBaseline, Container, Box, Typography, Button } from '@mui/material';
-import { useAppSelector } from '../../store/hooks';
-import { RootState } from '../../store/store';
 import { useDispatch } from 'react-redux';
-import { reset_websocket } from '../../store';
-import { reset_socket } from '../../store/socket';
+import { resetStoreDispatch } from '../../helper';
 
-function AdminClosed() {
+interface IProps {
+    text: string;
+}
+
+function AdminClosed(props: IProps) {
     const dispatch = useDispatch();
-    const { adminErrorMessage } = useAppSelector((state: RootState) => state.socketSlice);
+    const { text } = props;
 
     const clickReset = () => {
-        dispatch(reset_websocket({}));
-        dispatch(reset_socket({}));
+        resetStoreDispatch(dispatch);
     }
 
     return (
@@ -22,7 +22,7 @@ function AdminClosed() {
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
                     <Typography variant="h4" gutterBottom>
-                        {adminErrorMessage}
+                        {text}
                     </Typography>
 
                     <Typography variant="button" display="block" gutterBottom>

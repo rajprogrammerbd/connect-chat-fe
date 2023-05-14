@@ -1,8 +1,8 @@
 import React from 'react';
-import { IValues } from '../../Data/LinkedList';
 import { Box, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import TypingBar from '../typingBar';
+import { IMsg } from '../../Types';
 
 
 const useStyles: any = makeStyles({
@@ -23,7 +23,7 @@ const useStyles: any = makeStyles({
 });
 
 interface IProps {
-    msg: IValues;
+    msg: IMsg;
 }
 
 function ShowMessageNotificationBar(props: IProps) {

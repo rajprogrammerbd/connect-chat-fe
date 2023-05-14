@@ -16,6 +16,7 @@ interface IProps {
     canOpen: boolean | undefined;
     setDialogLocallyResDefault: () => void;
     startExistedConnection: (name: string, chatId: string) => void;
+    isConnected: boolean;
 }
 
 class QuestionBox extends React.PureComponent<IProps, IDialogState> {
@@ -27,6 +28,10 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
             forNewUser: false,
             restore: false
         }
+    }
+
+    componentDidMount(): void {
+        // console.log('state ', this.state);
     }
 
 
@@ -57,7 +62,7 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
         this.setState({ ...this.state, openDialog: false });
     }
 
-    formSubmitted = (event: any) => {
+    formSubmitted = (event: any): void => {
         const { name, chatID } = event;
 
         if (this.state.forNewUser) {
@@ -67,7 +72,6 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
 
         this.props.startExistedConnection(name, chatID);
         return;
-
     }
 
     render() {
@@ -78,8 +82,8 @@ class QuestionBox extends React.PureComponent<IProps, IDialogState> {
                     <FormLabel component="legend">{textFinder('questionAboutExistedID')}</FormLabel>
     
                     <Stack spacing={1} mt={1} direction="row">
-                        <Button variant="contained" onClick={this.openBar}>{textFinder('existedIdButtonText')}</Button>
-                        <Button variant="contained" onClick={this.openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
+                        <Button variant="contained" disabled={!this.props.isConnected} onClick={this.openBar}>{textFinder('existedIdButtonText')}</Button>
+                        <Button variant="contained" disabled={!this.props.isConnected} onClick={this.openBarForNewUser}>{textFinder('startNewChatButtonText')}</Button>
                     </Stack>
                 </FormControl>
                 <DialogBar restore={this.state.restore} isOpen={this.state.openDialog} closedFn={this.closeBar} formSumit={this.formSubmitted} isNewUser={this.state.forNewUser} />

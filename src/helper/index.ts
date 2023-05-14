@@ -1,15 +1,20 @@
-import LinkedList, { IValues } from "../Data/LinkedList";
+import cogoToast from "cogo-toast";
+import { Dispatch } from "redux";
 
-function map(list: LinkedList): IValues[] {
-    const arr = [];
-    let current = list.head;
+type IType = "info" | "warn" | "success" | "error";
 
-    while (current) {
-        arr.push(current.value);
-        current = current.next;
-    }
-
-    return arr;
+const displayMessage = (message: string, type: IType) => {
+    const { hide } = cogoToast[type](message, {
+        onClick: () => {
+            if (hide) {
+                hide();
+            }
+        },
+    });
 }
 
-export default map;
+export const resetStoreDispatch = (dispatch: Dispatch) => {
+    dispatch({ type: 'user/reset_users' });
+}
+
+export default displayMessage;

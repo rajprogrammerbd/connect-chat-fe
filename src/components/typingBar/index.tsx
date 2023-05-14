@@ -1,13 +1,13 @@
 import React from 'react';
-import { IValues } from '../../Data/LinkedList';
 import { Box, Typography } from '@mui/material';
 import { RootState } from '../../store/store';
 import { useAppSelector } from '../../store/hooks';
 import { makeStyles } from '@mui/styles';
 import { SiGooglechat } from "react-icons/si";
+import { IMsg } from '../../Types';
 
 interface IProps {
-    msg: IValues;
+    msg: IMsg;
 }
 
 const useStyles: any = makeStyles({
@@ -30,10 +30,15 @@ const useStyles: any = makeStyles({
   });
 
 function TypingBar(props: IProps) {
-    const { userId, userName } = useAppSelector((state: RootState) => state.websocketReducer);
+    const { userId } = useAppSelector((state: RootState) => state.user);
+
     const { msg } = props;
     const classes = useStyles();
 
+    if (msg.userId === userId) {
+        return null;
+    }
+    
     return (
         <>
             <Box>

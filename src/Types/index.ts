@@ -1,23 +1,51 @@
-import LinkedList from "../Data/LinkedList";
+export type Msg_Type = 'typing' | 'message' | 'started_chat' | 'user_joined' | 'user_removed' | 'removed_typing';
 
-export type IUsersName = {
-    name: string;
-    userId: string;
-    connectedAccessId: string;
+  export enum Msg_Types {
+    msg = 'message',
+    join = 'user_joined',
+    removed = 'user_removed',
+    typing = 'typing',
+    rv_typing = 'removed_typing',
+    started_chat = 'started_chat'
+  }
+
+export type IUser = {
+    userId: string
+    chatId: string
+    userName: string
+    isAdmin: boolean
 }
 
-export interface INewConnectionResponse {
-    connection: boolean;
-    message: string;
+export type IMsg = {
+    type: Msg_Type
+    chatId: string
+    userName: string
     userId: string;
-    accessId: string;
-    connectedAccessId: string;
+    message: string
+    timestamp: Date;
+  }
+
+export type IReciveUser = {
+    connection: boolean;
+    chatId: string;
+    message: string;
+    messages: IMsg[];
     name: string;
-    userIds: IUsersName[];
-    messages: LinkedList;
+    userId: string;
+    connectedUsersList: IUser[];
+};
+
+export type ReceivedMessagePayload = {
+    chatId: string;
+    connectedUsersList: IUser[];
+    userId: string;
+    name: string;
+    messages: IMsg[];
+    isAdmin?: boolean;
 }
 
-export interface IFailedResponse {
-    connection: boolean;
-    message: string;
+export type ISendMsgType = {
+  chatId: string;
+  userId: string;
+  msg: string;
 }
