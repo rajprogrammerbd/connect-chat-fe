@@ -6,27 +6,30 @@ import { IMsg, IUser, ReceivedMessagePayload } from '../Types';
 interface UserState {
   isConnected: boolean;
   connectedUsersList: IUser[];
-  isShownNotification: boolean;
   name?: string;
   isErrorOccured: boolean;
   userId?: string;
   chatId?: string;
   isAdmin?: boolean;
   messages?: IMsg[];
+  isAdminError: boolean;
 }
 
 // Define the initial state using that type
 const initialState: UserState = {
   isConnected: false,
   connectedUsersList: [],
-  isShownNotification: false,
-  isErrorOccured: false
+  isErrorOccured: false,
+  isAdminError: false
 }
 
 export const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
+    set_isAdminError(state, action: PayloadAction<boolean>) {
+      state.isAdminError = action.payload;
+    },
     set_isError(state, action: PayloadAction<boolean>) {
       state.isErrorOccured = action.payload;
     },
@@ -55,6 +58,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { set_isError, set_isConnected, received_message, update_total_messages, add_message, add_new_user_update } = userSlice.actions;
+export const { set_isAdminError, set_isError, set_isConnected, received_message, update_total_messages, add_message, add_new_user_update } = userSlice.actions;
 
 export default userSlice;

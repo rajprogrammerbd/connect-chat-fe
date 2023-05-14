@@ -137,7 +137,7 @@ function ChatBox(props: IProps) {
     }
 
     React.useEffect(() => {
-        if (connectedUsersList.length === 0) {
+        if (connectedUsersList.length === 1) {
             const timeout = window.setTimeout(() => {
                 openNotification('Still one is available on the chat');
             }, 10000);
@@ -154,7 +154,7 @@ function ChatBox(props: IProps) {
 
         setInput(value);
     }
-    console.log('messages ', messages);
+
     return (
         <>
             <Box sx={{ width: 1, height: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>

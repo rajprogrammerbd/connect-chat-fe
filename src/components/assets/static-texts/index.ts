@@ -14,7 +14,9 @@ const textObjs: IObjects = {
     provideAccessID: 'Provide the access ID to connect',
     submit: 'Submit',
     placeholderForIDInput: 'Provide the Chat ID',
-    placeholderForNameInput: 'Provide your full name'
+    placeholderForNameInput: 'Provide your full name',
+    adminClosedForAllUsers: 'Admin closed the chat',
+    adminUserClosed: 'closed the chatbox'
 };
 
 const textHash = new HashMap(1000);

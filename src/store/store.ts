@@ -1,4 +1,4 @@
-import { combineReducers, configureStore } from '@reduxjs/toolkit'
+import { AnyAction, Reducer, combineReducers, configureStore } from '@reduxjs/toolkit'
 import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session';
 import userSlice from '.';
@@ -13,7 +13,16 @@ const combine = combineReducers({
   user: userSlice.reducer
 });
 
-const persistedReducer = persistReducer(persistConfig, combine);
+const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
+  if (action.type === 'user/reset_users') {
+    sessionStorage.removeItem('persist:root')
+    console.log('this running now', sessionStorage.getItem('persist:root'))
+    state = {} as RootState
+  }
+  return combine(state, action);
+}
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,

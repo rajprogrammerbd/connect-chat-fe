@@ -7,9 +7,10 @@ import ChatBox from '../chatBox';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { RootState } from '../../store/store';
 import { SocketConnection } from '../../App';
-import cogoToast from 'cogo-toast';
-import { add_new_user_update, received_message, set_isConnected, set_isError, update_total_messages } from '../../store';
+import { add_new_user_update, received_message, set_isAdminError, set_isConnected, set_isError, update_total_messages } from '../../store';
 import { IMsg, IReciveUser, ISendMsgType, IUser } from '../../Types';
+import displayMessage, { resetStoreDispatch } from '../../helper';
+import textFinder from '../assets/static-texts';
 
 function HomeContainer() {
     const socket = React.useContext(SocketConnection);
@@ -17,7 +18,7 @@ function HomeContainer() {
     const dispatch = useAppDispatch();
     const [isSocketConnected, setIsSocketConnected] = React.useState(socket.connected);
 
-    const { isShownNotification, isConnected, isErrorOccured, userId, chatId } = useAppSelector((state: RootState) => state.user);
+    const { isConnected, isErrorOccured, userId, chatId, name, isAdmin } = useAppSelector((state: RootState) => state.user);
 
     const userTypingStart = (chatId: string, userId: string): void => {
         socket.emit('user_typing_message_start', chatId, userId);
@@ -31,6 +32,10 @@ function HomeContainer() {
         socket.on('connect', () => {
             setIsSocketConnected(true);
         });
+
+        socket.on('connect_error', () => {
+            displayMessage('Failed to connected to server, try again', 'warn');
+        });
     
         socket.on('disconnect', () => {
             setIsSocketConnected(false);
@@ -38,17 +43,29 @@ function HomeContainer() {
       }, []);
 
       React.useEffect(() => {
-        /*
         if (isSocketConnected) {
-            if (chatId !== '' && userId !== '') {
-                socket.emit('retrieve_info_of_refreshed_user', userId, accessId, connectedAccessId);
+            if (chatId !== undefined && userId !== undefined) {
+
+                if (isAdmin) {
+                    displayMessage(`${name} ${textFinder('adminUserClosed')}`, "success");
+
+                    setTimeout(() => {
+                        resetStoreDispatch(dispatch);
+                    }, 1000);
+                } else {
+                    socket.emit('refreshed_user', chatId, userId, name);
+                }
             }
         }
-        */
       }, [isSocketConnected]);
 
       React.useEffect(() => {
+        socket.on('admin-closed', () => {
+            dispatch(set_isAdminError(true));
+        });
+
         socket.on('add_new_user_update', (obj: IUser[], msg: IMsg[]) => {
+            console.log('add_new_user_update', obj, msg);
             dispatch(add_new_user_update(obj));
             dispatch(update_total_messages(msg));
         });
@@ -57,8 +74,10 @@ function HomeContainer() {
             dispatch(update_total_messages(msg));
         });
         */
-        socket.on('update-all-messages', (msg: IMsg[]) => {
-            dispatch(update_total_messages(msg));
+        socket.on('update-all-messages', (msg: IMsg[] | null) => {
+            if (msg !== null) {
+                dispatch(update_total_messages(msg));
+            }
         });
         /*
         socket.on('update-message-connectedUser', (msg: LinkedList, user: IUsersName[]) => {
@@ -84,15 +103,14 @@ function HomeContainer() {
         */
 
         socket.on('recived_new_existed_user', (obj: IReciveUser) => {
+            console.log('recived_new_existed_user', obj);
 
             // socket.emit('update-connected-user', obj.userIds, obj.connectedAccessId === '' ? obj.accessId : obj.connectedAccessId);
 
             dispatch(set_isError(false));
 
-            if (!isShownNotification) {
-                dispatch(set_isConnected(true));
-                handleNotificationOpen(obj.message, false);
-            }
+            dispatch(set_isConnected(true));
+            displayMessage(obj.message, "success");
 
             const { chatId, connectedUsersList, messages, name, userId } = obj;
 
@@ -107,16 +125,14 @@ function HomeContainer() {
         socket.on("receive_new_connection", (resObj: IReciveUser) => {
             if (!resObj.connection) {
                 dispatch(set_isError(true));
-                handleNotificationOpen(resObj.message, true);
+                displayMessage(resObj.message, "error");
             } else {
                 dispatch(set_isError(false));
-                if (!isShownNotification) {
-                    dispatch(set_isConnected(true));
-                    handleNotificationOpen(resObj.message, false);
-                }
+                dispatch(set_isConnected(true));
+                displayMessage(resObj.message, 'success');
 
                 const { chatId, connectedUsersList, messages, name, userId } = resObj;
-                console.log('execute');
+
                 dispatch(received_message({ chatId: chatId, connectedUsersList, messages, name: name, userId, isAdmin: true }));
             }
         });
@@ -126,16 +142,6 @@ function HomeContainer() {
         socket.emit('send_message', msg.chatId, msg.userId, msg.msg);
 
         socket.emit('update-msg-user', msg.chatId, msg.userId);
-    }
-
-    const handleNotificationOpen = (message: string, isError: boolean) => {
-        const { hide } = cogoToast[isError ? "error": "success"](message, {
-            onClick: () => {
-                if (hide) {
-                    hide();
-                }
-            },
-        });
     }
 
     const startExistedConnection = (name: string, chatID: string) => {
@@ -160,7 +166,7 @@ function HomeContainer() {
             <Container maxWidth="lg">
                 <Box sx={{ height: '100vh',  display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', p: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: "80%", height: '80%', border: '1px solid #ddd' }}>
-                        {isConnected ? <ChatBox userTypingStart={userTypingStart} userTypingStop={userTypingStop} sendMessage={sendMessage} /> : <QuestionBox setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
+                        {isConnected ? <ChatBox userTypingStart={userTypingStart} userTypingStop={userTypingStop} sendMessage={sendMessage} /> : <QuestionBox isConnected={isSocketConnected} setDialogLocallyResDefault={setDialogLocallyResDefault} canOpen={isErrorOccured} startExistedConnection={startExistedConnection} startNewConnection={startNewConnection} />}
                     </Box>
                 </Box>
             </Container>
