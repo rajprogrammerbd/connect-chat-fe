@@ -34,7 +34,7 @@ function HomeContainer() {
         });
 
         socket.on('connect_error', () => {
-            displayMessage('Failed to connected to server, try again', 'warn');
+            displayMessage(textFinder('failedConnectServer'), 'warn');
         });
     
         socket.on('disconnect', () => {
