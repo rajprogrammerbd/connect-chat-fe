@@ -1,29 +1,105 @@
 import React from 'react'
-import { io } from "socket.io-client";
-import AppBarContainer from './components/AppBar';
-import HomeContainer from './components/HomeContainer';
-import { useAppSelector } from './store/hooks';
-import { RootState } from './store/store';
-import AdminClosed from './components/AdminClosed';
-import textFinder from './components/assets/static-texts';
+import { io } from 'socket.io-client';
+import { useDispatch } from 'react-redux';
+import { Store } from 'react-notifications-component';
+import { set_isConnected } from './store';
+import HomeBody from "./components/HomeBody";
+import "./App.css";
 
-const socketUrl = import.meta.env.VITE_WEBSOCKET_URL as string;
-const socket = io(socketUrl);
 
-export const SocketConnection = React.createContext(socket);
+const URL = import.meta.env.VITE_WEBSOCKET_URL;
 
+const socket = io(URL, {
+  reconnection: true,
+  reconnectionAttempts: 5,
+  reconnectionDelay: 2000
+});
 
 function App() {
-  const { isAdminError } = useAppSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
 
-  return (
-    <>
-      <SocketConnection.Provider value={socket}>
-          <AppBarContainer/>
-            {isAdminError ? <AdminClosed text={textFinder('adminClosedForAllUsers')} /> : <HomeContainer />}
-      </SocketConnection.Provider>
-    </>
-  );
+  React.useEffect(() => {
+    socket.on('connect', () => {
+      dispatch(set_isConnected({
+        status: 200,
+        message: 'connected'
+      }));
+    });
+
+    socket.on('connect_error', () => {
+      dispatch(set_isConnected({
+        status: 500,
+        message: "disconnected"
+      }));
+    });
+
+    socket.on('disconnect', () => {
+      dispatch(set_isConnected({
+        status: 500,
+        message: "disconnected"
+      }));
+    });
+
+    socket.io.on("reconnect_attempt", () => {
+      Store.addNotification({
+        title: "Reconnect",
+        message: "trying to reconnect...",
+        type: "info",
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 2000,
+          onScreen: true
+        }
+      });
+    });
+
+    socket.io.on("reconnect_failed", () => {
+      console.log('reconnected failed')
+    });
+
+    socket.io.on('reconnect', () => {
+      Store.addNotification({
+        title: "Connected",
+        message: "connection is established",
+        type: "success",
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 2000,
+          onScreen: true
+        }
+      });
+    });
+
+    socket.io.on("reconnect_failed", () => {
+      Store.removeAllNotifications();
+      
+      Store.addNotification({
+        title: "Failed",
+        message: "Reconnection failed, please refresh",
+        type: "danger",
+        insert: "top",
+        container: "top-right",
+        animationIn: ["animate__animated", "animate__fadeIn"],
+        animationOut: ["animate__animated", "animate__fadeOut"],
+        dismiss: {
+          duration: 10000,
+          onScreen: true
+        }
+      });
+    });
+
+    return () => {
+      socket.disconnect();
+    }
+  }, []);
+
+  return <HomeBody />
 }
 
 export default React.memo(App);

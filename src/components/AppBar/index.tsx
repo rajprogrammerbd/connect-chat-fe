@@ -26,16 +26,22 @@ function AppBarContainer() {
   const [showModal, setShowModal] = React.useState<boolean>(false);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1 }} position="fixed">
       <AppBar>
         <Toolbar variant="dense">
            <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>
             {textFinder('appName')}
           </Typography>
-          {isConnected ? <Button color="inherit" onClick={() => setShowModal(true)}>Connected: {connectedUsersList.length}</Button> : null}
+          {isConnected ? <Button color="inherit" onClick={() => setShowModal(true)}>Connected: 0</Button> : null}
         </Toolbar>
       </AppBar>
+    </Box>
+  );
+}
 
+export default React.memo(AppBarContainer);
+
+/*
       <Modal
             open={showModal}
             onClose={() => setShowModal(false)}
@@ -51,8 +57,4 @@ function AppBarContainer() {
                 </Typography>
         </Box>
       </Modal>
-    </Box>
-  );
-}
-
-export default React.memo(AppBarContainer);
+*/
