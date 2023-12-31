@@ -6,18 +6,22 @@ interface IObjects {
 
 const textObjs: IObjects = {
     appName: 'ConnectChat',
-    longDescriptionFormText: 'Way to connect and disposable chat',
-    questionAboutExistedID: 'Do you have existed chat ID?',
+    longDescriptionFormText: 'Connect with disposable chat system',
     existedIdButtonText: 'Existed ID',
     startNewChatButtonText: 'Start new Chat',
-    labelOfAskingID: 'Please provide your connection ID',
-    provideAccessID: 'Provide the access ID to connect',
-    submit: 'Submit',
-    placeholderForIDInput: 'Provide the Chat ID',
-    placeholderForNameInput: 'Provide your full name',
-    adminClosedForAllUsers: 'Admin closed the chat',
-    adminUserClosed: 'closed the chatbox',
-    failedConnectServer: 'Failed to connected to server, refresh again'
+    tryingReconnect: "trying to reconnect...",
+    disconnected: "disconnected",
+    connectionEstablished: "connection is established",
+    reconnectionFailed: "Reconnection failed, please refresh",
+    startNewChatTitle: "Start a new chat",
+    startNewChatSubTitle: "Provide all required field (*) details",
+    enterYourName: "Enter your name",
+    enterYourEmail: "Enter your email address",
+    accessConnectionId: "Access the chat world!",
+    provideConnectionId: "Provide your connection Id",
+    connectionId: "Enter the connection Id",
+    sendUserLoginSubmitButton: "Access",
+    resetLogin: "Reset"
 };
 
 const textHash = new HashMap(1000);
@@ -33,5 +37,6 @@ function textFinder(key: string): string {
 
     return 'no found';
 }
+
 
 export default textFinder;

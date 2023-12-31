@@ -1,6 +1,4 @@
 import React, { Suspense } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
 import CircularProgress from "@mui/material/CircularProgress/CircularProgress";
 
 const LoginContainer = React.lazy(() => import('../LoginContainer'));

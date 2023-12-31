@@ -1,99 +1,55 @@
 import * as React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import CircularProgress from '@mui/material/CircularProgress';
-import textFinder from '../assets/static-texts';
-import { Button } from '@mui/material';
-import CustomInput from '../customTextField';
+import { IDialogBarProps } from '../../Types';
+import { motion } from 'framer-motion';
+import DialogBarLists from '../DialogBarLists';
 
-interface IPropsOfState {
-    name: string;
-    chatID: string;
-    isSubmitted: boolean;
-}
-interface IProps {
-    isOpen: boolean;
-    closedFn: () => void;
-    formSumit: (state: IPropsOfState) => void;
-    isNewUser: boolean;
-    restore: boolean;
-}
+function DialogBar(props: IDialogBarProps) {
+    const { setOpenedBar } = props;
+    const divRef = React.useRef<HTMLDivElement>(null);
 
-class DialogBar extends React.PureComponent<IProps, IPropsOfState> {
-    constructor(props: IProps) {
-        super(props);
-
-        this.state = {
-            name: '',
-            chatID: '',
-            isSubmitted: false
+    React.useEffect(() => {
+        function handleClickOutside(event: any) {
+          if (divRef.current && !divRef.current.contains(event.target)) {
+            setOpenedBar("");
+          }
         }
-    }
+        
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [divRef]);
 
-    static getDerivedStateFromProps(props: IProps, state: IPropsOfState) {
-        if (props.restore) {
-            return {
-                ...state,
-                isSubmitted: false
-            }
-        }
+    return (
+        <>
+            <motion.div
+                ref={divRef}
+                className="absolute w-3/5 h-4/5 rounded"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+            >
+                <motion.div
+                    initial={{
+                        clipPath: "polygon(69% 0, 51% 57%, 37% 100%, 0% 100%, 0 52%, 0% 0%)",
+                        backgroundImage: "radial-gradient(circle at 50% -20.71%, #ade5ff 0, #7dcefb 25%, #3cb5f2 50%, #009ce9 75%, #0085e0 100%)"
+                    }}
+                    className="absolute w-full h-full"
+                />
 
-        return state;
-    }
-
-    changeNameText = (event: any) => {
-        const { value } = event.target;
-
-        this.setState({ ...this.state, name: value });
-    }
-
-    changeChatId = (event: any) => {
-        const { value } = event.target;
-
-        this.setState({ ...this.state, chatID: value });
-    }
-
-    formSubmittedLocally = () => {
-        this.setState({ ...this.state, isSubmitted: true });
-        this.props.formSumit(this.state);
-    }
-
-    render() {
-        return (
-            <>
-                <Dialog
-                    open={this.props.isOpen}
-                    onClose={this.props.closedFn}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
+                <motion.div
+                    initial={{
+                        backgroundColor: "honeydew",
+                        clipPath: "polygon(70% -20px, 52% 53%, 37.1% 100%, 100% 100%, 100% 50%, 100% 0px)",
+                    }}
+                    className="w-full h-full flex flex-col items-end p-10 justify-center"
                 >
-                    <DialogTitle id="alert-dialog-title">
-                        {textFinder('labelOfAskingID')}
-                    </DialogTitle>
-    
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            {textFinder('provideAccessID')}
-                        </DialogContentText>
-    
-                        <CustomInput type="text" value={this.state.name} onChange={this.changeNameText} placeholder={textFinder('placeholderForNameInput')}  />
-                        {this.props.isNewUser ? null : <CustomInput type="text" value={this.state.chatID} onChange={this.changeChatId} placeholder={textFinder('placeholderForIDInput')} />}
-                    </DialogContent>
-    
-                    <DialogActions>
-                        <Button onClick={this.props.closedFn}>Disagree</Button>
-                        <Button disabled={this.props.isNewUser ? this.state.name === '' : (this.state.name === '' || this.state.chatID === '')} onClick={this.formSubmittedLocally}>
-                            {this.state.isSubmitted ? <CircularProgress /> : textFinder('submit')}
-                        </Button>
-                    </DialogActions>
-    
-                </Dialog>
-            </>
-        );
-    }
+                    <DialogBarLists />
+                </motion.div>
+            </motion.div>
+        </>
+    );
 }
 
-export default DialogBar;
+export default React.memo(DialogBar);
