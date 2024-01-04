@@ -11,7 +11,6 @@ import { useDispatch } from "react-redux";
 
 function DialogBarLists() {
     const forElement = React.useContext(ForElementNamed);
-    const dispatch = useDispatch();
     const setUpUser = React.useContext(SetUpUser);
     const { error } = useSelector((state: RootState) => state.user);
     const [scope, animate] = useAnimate();

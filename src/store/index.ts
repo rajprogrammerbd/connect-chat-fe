@@ -35,6 +35,7 @@ export const userSlice = createSlice({
 
     setUp_user: (state, action: PayloadAction<SUCCESS_RESPONSE_USER_CREATE | null>) => {
       state.user = action.payload;
+      state.error = null;
     }
   },
 });
