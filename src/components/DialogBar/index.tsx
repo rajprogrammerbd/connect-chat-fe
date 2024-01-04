@@ -2,15 +2,19 @@ import * as React from 'react';
 import { IDialogBarProps } from '../../Types';
 import { motion } from 'framer-motion';
 import DialogBarLists from '../DialogBarLists';
+import { useDispatch } from 'react-redux';
+import { set_error } from '../../store';
 
 function DialogBar(props: IDialogBarProps) {
     const { setOpenedBar } = props;
+    const dispatch = useDispatch();
     const divRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
         function handleClickOutside(event: any) {
           if (divRef.current && !divRef.current.contains(event.target)) {
             setOpenedBar("");
+            dispatch(set_error(null));
           }
         }
         
