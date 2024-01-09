@@ -22,7 +22,7 @@ const style = {
 };
 
 function AppBarContainer() {
-  const { isConnected, connectedUsersList } = useAppSelector((state: RootState) => state.user);
+  const { isConnected } = useAppSelector((state: RootState) => state.user);
   const [showModal, setShowModal] = React.useState<boolean>(false);
 
   return (

@@ -38,12 +38,13 @@ function LoginContainer() {
         <React.Suspense fallback={<h4>Loading...</h4>}>
             <ForElementNamed.Provider value={state.forElement}>
                 <motion.div
-                    className="w-full items-center flex flex-col"
+                    className="w-full items-center flex flex-col raj"
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 1, transition: { delay: 0 } }}
+                    animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    transition={{ duration: 0.9 }}
                 >
-                    <div className="flex flex-col items-center justify-center w-1/2">
+                    <div className="flex flex-col items-center justify-center lg:w-1/2 w-11/12">
                         {!isConnect() ? <Skeleton variant="text" sx={{ fontSize: '1rem', width: 435 }} /> : (
                             <h4 className="font-black text-2xl">{textFinder('longDescriptionFormText')}</h4>
                         )}

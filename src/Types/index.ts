@@ -7,12 +7,12 @@ export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
 export type SUCCESS_RESPONSE_USER_CREATE = {
   statusCode: number;
   body: {
-      user_id: string;
-      username: string;
-      email: string;
-      isRoot: boolean;
-      connection_id: string;
-      socket_id: string;
+    _id: string;
+    username: string;
+    email: string;
+    is_root: boolean;
+    connection_id: string;
+    socket_id: string;
   }
 }
 

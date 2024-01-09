@@ -31,6 +31,7 @@ function App() {
 
   React.useEffect(() => {
     socket.on('connect', () => {
+      console.log('socket.id', socket.id);
       dispatch(set_isConnected({
         status: 200,
         message: 'connected'
@@ -121,7 +122,7 @@ function App() {
   console.log(user);
   return (
     <SetUpUser.Provider value={setUpUser}>
-      <div className="container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
+      <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
         <AnimatePresence mode="wait">
           {!user ? (
               <HomeBody />

@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <AppBarContainer />
-          <App />
+            <App />
           <ReactNotifications />
         </PersistGate>
       </Provider>
