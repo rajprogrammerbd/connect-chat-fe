@@ -119,20 +119,20 @@ function App() {
   const setUpUser = React.useCallback(({ email, is_root, username, connection_id }: SET_UP_USER) => {
     socket.emit(CREATE_USER, { email, is_root, username, connection_id });
   }, []);
-  console.log(user);
+
   return (
     <SetUpUser.Provider value={setUpUser}>
-      <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
         <AnimatePresence mode="wait">
           {!user ? (
+            <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
               <HomeBody />
+            </div>
             ) : (
               <React.Suspense fallback={<p>Loading</p>}>
                 <LoginBody />
               </React.Suspense>
             )}
         </AnimatePresence>
-      </div>
     </SetUpUser.Provider>
   )
 }

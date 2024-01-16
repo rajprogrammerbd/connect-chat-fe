@@ -24,3 +24,16 @@ body, #root {
     flex-direction: column;
     align-items: center;
 }
+
+.grid-design-custom {
+    display: grid;
+    /* width: 95%; */
+    grid-template-columns: 0.2fr 1fr 5fr 1.5fr;
+    grid-template-rows: auto;
+}
+
+.option-items {
+    width: 102%;
+    padding: 10px 0px;
+    cursor: pointer;
+}

@@ -7,9 +7,12 @@ import { SetUpUser } from "../../App";
 import Button from "@mui/material/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { useDispatch } from "react-redux";
 
-function DialogBarLists() {
+interface IProps {
+    width: "same" | "alternate";
+}
+
+function DialogBarLists(props: IProps) {
     const forElement = React.useContext(ForElementNamed);
     const setUpUser = React.useContext(SetUpUser);
     const { error } = useSelector((state: RootState) => state.user);
@@ -72,7 +75,7 @@ function DialogBarLists() {
                         placeholder: textFinder("enterYourEmail"),
                         label: "Email address:",
                         id: "newChatEmailInput",
-                        width: "w-96",
+                        width: (props.width === "same") ? "w-80" : "w-96",
                         value: "",
                         name: "new_chat_email"
                     }

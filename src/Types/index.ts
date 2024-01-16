@@ -1,3 +1,5 @@
+import { IconType } from "react-icons";
+
 export type Msg_Type = 'typing' | 'message' | 'started_chat' | 'user_joined' | 'user_removed' | 'removed_typing';
 
 // Socket actions. 
@@ -66,4 +68,15 @@ export interface SET_UP_USER {
   is_root: boolean;
   username: string;
   connection_id: string | null;
+}
+
+export type OptionListsType = {
+  id: number;
+  icon: IconType;
+  size: number,
+  color: string;
+}
+export interface LoginBodyStateType {
+  activeOptionId: number;
+  optionLists: OptionListsType[];
 }

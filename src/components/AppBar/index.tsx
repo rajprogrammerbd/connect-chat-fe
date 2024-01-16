@@ -6,20 +6,7 @@ import Typography from '@mui/material/Typography';
 import textFinder from '../assets/static-texts';
 import { useAppSelector } from '../../store/hooks';
 import { RootState } from '../../store/store';
-import { Button, IconButton, Modal } from '@mui/material';
-import { IUser } from '../../Types';
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-};
+import { Button } from '@mui/material';
 
 function AppBarContainer() {
   const { isConnected } = useAppSelector((state: RootState) => state.user);

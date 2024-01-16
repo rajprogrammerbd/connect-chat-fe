@@ -38,7 +38,7 @@ function LoginContainer() {
         <React.Suspense fallback={<h4>Loading...</h4>}>
             <ForElementNamed.Provider value={state.forElement}>
                 <motion.div
-                    className="w-full items-center flex flex-col raj"
+                    className="w-full items-center flex flex-col"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
