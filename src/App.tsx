@@ -5,10 +5,11 @@ import { Store } from 'react-notifications-component';
 import textFinder from './components/assets/static-texts';
 import { setUp_user, set_error, set_isConnected } from './store';
 import HomeBody from "./components/HomeBody";
-import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE } from './Types';
+import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RESPONSE_CHAT, RESPONSE_CHAT_BODY, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE } from './Types';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { AnimatePresence } from 'framer-motion';
+import { add_message } from './store/messages';
 import "./App.css";
 
 // import lazy components
@@ -24,6 +25,7 @@ const socket = io(URL, {
 
 // React context
 export const SetUpUser = React.createContext<(prop: SET_UP_USER) => void>(() => {});
+export const MessagesLists = React.createContext<(connection_id: string) => void>(() => {});
 
 function App() {
   const dispatch = useDispatch();
@@ -31,7 +33,6 @@ function App() {
 
   React.useEffect(() => {
     socket.on('connect', () => {
-      console.log('socket.id', socket.id);
       dispatch(set_isConnected({
         status: 200,
         message: 'connected'
@@ -39,7 +40,6 @@ function App() {
     });
 
     socket.on(SEND_RESPONSE_CREATED_USER, (response: SUCCESS_RESPONSE_USER_CREATE) => {
-
       dispatch(setUp_user({ ...response }));
     });
 
@@ -59,6 +59,10 @@ function App() {
         status: 500,
         message: "disconnected"
       }));
+    });
+
+    socket.on(SEND_MESSAGES, (body: RESPONSE_CHAT) => {
+      dispatch(add_message({ messages: body.messages, groupName: body.group_name }));
     });
 
     socket.io.on("reconnect_attempt", () => {
@@ -120,20 +124,26 @@ function App() {
     socket.emit(CREATE_USER, { email, is_root, username, connection_id });
   }, []);
 
+  const messageLists = React.useCallback((connection_id: string) => {
+    socket.emit(MESSAGES, connection_id);
+  }, []);
+
   return (
-    <SetUpUser.Provider value={setUpUser}>
-        <AnimatePresence mode="wait">
-          {!user ? (
-            <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
-              <HomeBody />
-            </div>
-            ) : (
-              <React.Suspense fallback={<p>Loading</p>}>
-                <LoginBody />
-              </React.Suspense>
-            )}
-        </AnimatePresence>
-    </SetUpUser.Provider>
+    <MessagesLists.Provider value={messageLists}>
+      <SetUpUser.Provider value={setUpUser}>
+          <AnimatePresence mode="wait">
+            {!user ? (
+              <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
+                <HomeBody />
+              </div>
+              ) : (
+                <React.Suspense fallback={<p>Loading</p>}>
+                  <LoginBody />
+                </React.Suspense>
+              )}
+          </AnimatePresence>
+      </SetUpUser.Provider>
+    </MessagesLists.Provider>
   )
 }
 

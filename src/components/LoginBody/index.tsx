@@ -1,6 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import LoginBodyOptionsBar from '../LoginBodyOptionsBar';
+import MessagesListBox from '../MessagesListBox';
+import ChatBox from '../ChatBox';
+import AttachmentBox from '../AttachmentBox';
 
 
 function LoginBody() {
@@ -14,9 +17,9 @@ function LoginBody() {
                 className="mx-auto mt-12 w-full h-full grid-design-custom"
             >
                 <LoginBodyOptionsBar />
-                <div></div>
-                <div></div>
-                <div></div>
+                <MessagesListBox />
+                <ChatBox />
+                <AttachmentBox />
             </motion.div>
         </>
     );

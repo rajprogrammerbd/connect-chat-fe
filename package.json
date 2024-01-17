@@ -28,7 +28,8 @@
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
-    "socket.io-client": "^4.6.0"
+    "socket.io-client": "^4.6.0",
+    "styled-components": "^6.1.8"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
@@ -49,5 +50,8 @@
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
     "vitest": "^0.28.4"
+  },
+  "resolutions": {
+    "styled-components": "^5"
   }
 }

@@ -28,7 +28,7 @@ body, #root {
 .grid-design-custom {
     display: grid;
     /* width: 95%; */
-    grid-template-columns: 0.2fr 1fr 5fr 1.5fr;
+    grid-template-columns: 0.2fr 1.5fr 5fr 1.5fr;
     grid-template-rows: auto;
 }
 

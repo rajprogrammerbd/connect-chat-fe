@@ -6,6 +6,8 @@ export type Msg_Type = 'typing' | 'message' | 'started_chat' | 'user_joined' | '
 export const CREATE_USER = "CREATE_USER";
 export const FAILED_RESPONSE = "FAILED_RESPONSE";
 export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
+export const MESSAGES = "get_messages";
+export const SEND_MESSAGES = 'send_messages';
 export type SUCCESS_RESPONSE_USER_CREATE = {
   statusCode: number;
   body: {
@@ -79,4 +81,25 @@ export type OptionListsType = {
 export interface LoginBodyStateType {
   activeOptionId: number;
   optionLists: OptionListsType[];
+}
+
+export type RESPONSE_CHAT_BODY = {
+  username: string;
+  message: string;
+  connection_id: string;
+  is_root: boolean;
+  socket_id: string;
+}
+
+export type RESPONSE_CHAT = {
+  _id: string;
+  connection_id: string;
+  group_name: string;
+  messages: RESPONSE_CHAT_BODY[];
+}
+
+export interface IChatGroupProps {
+  data: RESPONSE_CHAT_BODY[];
+  groupName: string;
+  time: string;
 }

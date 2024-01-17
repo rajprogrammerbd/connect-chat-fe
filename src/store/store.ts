@@ -2,7 +2,7 @@ import { AnyAction, Reducer, combineReducers, configureStore } from '@reduxjs/to
 import { persistStore, persistReducer } from 'redux-persist';
 import storageSession from 'redux-persist/lib/storage/session';
 import userSlice from '.';
-
+import messageSlice from './messages';
 
 const persistConfig = {
   key: 'root',
@@ -10,7 +10,8 @@ const persistConfig = {
 }
 
 const combine = combineReducers({
-  user: userSlice.reducer
+  user: userSlice.reducer,
+  messages: messageSlice.reducer
 });
 
 const rootReducer: Reducer = (state: RootState, action: AnyAction) => {
