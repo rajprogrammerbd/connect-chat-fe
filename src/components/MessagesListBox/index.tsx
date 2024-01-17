@@ -1,21 +1,13 @@
 import * as React from 'react';
-import { MessagesLists } from '../../App';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-
-import { RESPONSE_CHAT_BODY } from '../../Types';
 import ChatGroup from '../ChatGroup';
 import { IMessageGroupObj } from '../../store/messages';
 
 function MessagesListBox() {
-    const messageList = React.useContext(MessagesLists);
-    const { connection_id } = useSelector((state: RootState) => state.user.user.body);
     const groups = useSelector((state: RootState) => state.messages.groups);
 
 
-    React.useEffect(() => {
-        messageList(connection_id);
-    }, []);
 
     return (
         <>

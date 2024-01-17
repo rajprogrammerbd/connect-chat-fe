@@ -25,7 +25,6 @@ const socket = io(URL, {
 
 // React context
 export const SetUpUser = React.createContext<(prop: SET_UP_USER) => void>(() => {});
-export const MessagesLists = React.createContext<(connection_id: string) => void>(() => {});
 
 function App() {
   const dispatch = useDispatch();
@@ -124,26 +123,20 @@ function App() {
     socket.emit(CREATE_USER, { email, is_root, username, connection_id });
   }, []);
 
-  const messageLists = React.useCallback((connection_id: string) => {
-    socket.emit(MESSAGES, connection_id);
-  }, []);
-
   return (
-    <MessagesLists.Provider value={messageLists}>
-      <SetUpUser.Provider value={setUpUser}>
-          <AnimatePresence mode="wait">
-            {!user ? (
-              <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
-                <HomeBody />
-              </div>
-              ) : (
-                <React.Suspense fallback={<p>Loading</p>}>
-                  <LoginBody />
-                </React.Suspense>
-              )}
-          </AnimatePresence>
-      </SetUpUser.Provider>
-    </MessagesLists.Provider>
+    <SetUpUser.Provider value={setUpUser}>
+        <AnimatePresence mode="wait">
+          {!user ? (
+            <div className="w-full lg:container h-full mt-12 scroll-smooth overflow-x-hidden overflow-y-auto flex items-center justify-center flex-col no-scrollbar">
+              <HomeBody />
+            </div>
+            ) : (
+              <React.Suspense fallback={<p>Loading</p>}>
+                <LoginBody />
+              </React.Suspense>
+            )}
+        </AnimatePresence>
+    </SetUpUser.Provider>
   )
 }
 
