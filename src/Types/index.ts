@@ -7,6 +7,7 @@ export const CREATE_USER = "CREATE_USER";
 export const FAILED_RESPONSE = "FAILED_RESPONSE";
 export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
 export const MESSAGES = "get_messages";
+export const RECONNECT = 'reconnect-connections';
 export const SEND_MESSAGES = 'send_messages';
 export type SUCCESS_RESPONSE_USER_CREATE = {
   statusCode: number;

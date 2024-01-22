@@ -5,7 +5,7 @@ import { Store } from 'react-notifications-component';
 import textFinder from './components/assets/static-texts';
 import { setUp_user, set_error, set_isConnected } from './store';
 import HomeBody from "./components/HomeBody";
-import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RESPONSE_CHAT, RESPONSE_CHAT_BODY, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE } from './Types';
+import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, RESPONSE_CHAT_BODY, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE } from './Types';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { AnimatePresence } from 'framer-motion';
@@ -29,6 +29,16 @@ export const SetUpUser = React.createContext<(prop: SET_UP_USER) => void>(() => 
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.user);
+
+  React.useEffect(() => {
+    const data = user?.body;
+
+    if (data) {
+      const { socket_id, email } = data;
+
+      socket.emit(RECONNECT, socket_id, email);
+    }
+  }, []);
 
   React.useEffect(() => {
     socket.on('connect', () => {
