@@ -21,7 +21,10 @@ const textObjs: IObjects = {
     provideConnectionId: "Provide your connection Id",
     connectionId: "Enter the connection Id",
     sendUserLoginSubmitButton: "Access",
-    resetLogin: "Reset"
+    resetLogin: "Reset",
+    notMessageToShow: "Not messages to show",
+    noChatSelectedMessage: "Not chat selected",
+    MessageDetails: "Message Detail"
 };
 
 const textHash = new HashMap(1000);

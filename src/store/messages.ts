@@ -1,16 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { RESPONSE_CHAT_BODY } from '../Types';
-
-export interface IMessageGroupObj {
-    messages: RESPONSE_CHAT_BODY[];
-    group_name: string;
-    time: string;
-}
-
-interface IInitialState {
-    groups: IMessageGroupObj[];
-}
+import { IInitialState, RESPONSE_CHAT_BODY } from '../Types';
 
 const initialState: IInitialState = {
     groups: []

@@ -2,12 +2,11 @@ import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import ChatGroup from '../ChatGroup';
-import { IMessageGroupObj } from '../../store/messages';
+import textFinder from '../assets/static-texts';
+import { IMessageGroupObj } from '../../Types';
 
 function MessagesListBox() {
     const groups = useSelector((state: RootState) => state.messages.groups);
-
-
 
     return (
         <>
@@ -16,15 +15,13 @@ function MessagesListBox() {
                     <p className="font-bold">Messages</p>
                 </div>
 
-                <div className="p-4">
-                    {(!groups.length) ? (
-                        <p>Not messages to show</p>
-                    ) : (
-                        <>
-                            {groups.map((chat: IMessageGroupObj, id: number) => <ChatGroup groupName={chat.group_name} time={chat.time} key={id} data={chat.messages} /> )}
-                        </>
-                    )}
-                </div>
+                {(!groups.length) ? (
+                    <p>{textFinder("notMessageToShow")}</p>
+                ) : (
+                    <>
+                        {groups.map((chat: IMessageGroupObj, id: number) => <ChatGroup groupName={chat.group_name} time={chat.time} key={id} data={chat.messages} /> )}
+                    </>
+                )}
             </div>         
         </>
     );

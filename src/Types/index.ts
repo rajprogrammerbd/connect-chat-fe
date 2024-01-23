@@ -104,3 +104,17 @@ export interface IChatGroupProps {
   groupName: string;
   time: string;
 }
+
+export interface IChatBoxProps {
+  activeGroupName: string;
+}
+
+export interface IMessageGroupObj {
+  messages: RESPONSE_CHAT_BODY[];
+  group_name: string;
+  time: string;
+}
+
+export interface IInitialState {
+  groups: IMessageGroupObj[];
+}
