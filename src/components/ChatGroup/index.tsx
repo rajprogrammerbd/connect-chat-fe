@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { RiGroup2Line } from "react-icons/ri";
 import { IChatGroupProps } from '../../Types';
 import { DisplayChatFn, DisplayName } from '../LoginBody';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const GridMessageItemBlock = styled.div<{$bgColor: string}>`
     display: grid;
@@ -48,13 +50,13 @@ function ChatGroup(props: IChatGroupProps) {
     const display = React.useContext(DisplayChatFn);
     const name = React.useContext(DisplayName);
     
-    const { data, groupName, time } = props;
+    const { data, groupName, time, connection_id } = props;
 
     const handleDisplay = (groupName: string) => {
         if (name === groupName) {
-            display();
+            display(connection_id);
         } else {
-            display(groupName);
+            display(connection_id, groupName);
         }
     }
 

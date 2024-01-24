@@ -193,7 +193,7 @@ function DialogBarLists(props: IProps) {
             setUpUser({ username: lists[0].value, email: lists[1].value, connection_id: lists[2].value, is_root: false })
         }
     }, []);
-    console.log('error ', error);
+
     return (
         <>
             <div>

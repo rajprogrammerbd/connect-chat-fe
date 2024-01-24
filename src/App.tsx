@@ -5,7 +5,7 @@ import { Store } from 'react-notifications-component';
 import textFinder from './components/assets/static-texts';
 import { setUp_user, set_error, set_isConnected } from './store';
 import HomeBody from "./components/HomeBody";
-import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, RESPONSE_CHAT_BODY, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE } from './Types';
+import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE, UPDATE_GROUP_NAME } from './Types';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { AnimatePresence } from 'framer-motion';
@@ -25,6 +25,7 @@ const socket = io(URL, {
 
 // React context
 export const SetUpUser = React.createContext<(prop: SET_UP_USER) => void>(() => {});
+export const UpdateGroupNameFunc = React.createContext((groupName: string) => {});
 
 function App() {
   const dispatch = useDispatch();
@@ -71,7 +72,7 @@ function App() {
     });
 
     socket.on(SEND_MESSAGES, (body: RESPONSE_CHAT) => {
-      dispatch(add_message({ messages: body.messages, groupName: body.group_name }));
+      dispatch(add_message({ messages: body.messages, connection_id: body.connection_id, group_name: body.group_name }));
     });
 
     socket.io.on("reconnect_attempt", () => {
@@ -133,6 +134,14 @@ function App() {
     socket.emit(CREATE_USER, { email, is_root, username, connection_id });
   }, []);
 
+  const updateGroupName = (groupName: string): void => {
+    if (user?.body) {
+      const body = user.body;
+
+      socket.emit(UPDATE_GROUP_NAME, { groupName, connection_id: body.connection_id, email: body.email });
+    }
+  }
+
   return (
     <SetUpUser.Provider value={setUpUser}>
         <AnimatePresence mode="wait">
@@ -142,7 +151,9 @@ function App() {
             </div>
             ) : (
               <React.Suspense fallback={<p>Loading</p>}>
-                <LoginBody />
+                <UpdateGroupNameFunc.Provider value={updateGroupName}>
+                  <LoginBody />
+                </UpdateGroupNameFunc.Provider>
               </React.Suspense>
             )}
         </AnimatePresence>

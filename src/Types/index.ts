@@ -4,6 +4,7 @@ export type Msg_Type = 'typing' | 'message' | 'started_chat' | 'user_joined' | '
 
 // Socket actions. 
 export const CREATE_USER = "CREATE_USER";
+export const UPDATE_GROUP_NAME = "update_group_names";
 export const FAILED_RESPONSE = "FAILED_RESPONSE";
 export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
 export const MESSAGES = "get_messages";
@@ -103,15 +104,19 @@ export interface IChatGroupProps {
   data: RESPONSE_CHAT_BODY[];
   groupName: string;
   time: string;
+  connection_id: string;
 }
 
 export interface IChatBoxProps {
   activeGroupName: string;
+  connection_id: string;
+  updateText: (e: string) => void;
 }
 
 export interface IMessageGroupObj {
   messages: RESPONSE_CHAT_BODY[];
   group_name: string;
+  connection_id: string;
   time: string;
 }
 

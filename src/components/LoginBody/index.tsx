@@ -4,22 +4,40 @@ import LoginBodyOptionsBar from '../LoginBodyOptionsBar';
 import MessagesListBox from '../MessagesListBox';
 import ChatBox from '../ChatBox';
 import AttachmentBox from '../AttachmentBox';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
-export const DisplayChatFn = React.createContext((name?: string) => {});
+export const DisplayChatFn = React.createContext((connection_id: string, name?: string) => {});
 export const DisplayName = React.createContext('');
 
 function LoginBody() {
     const [state, setState] = React.useState(() => {
         return {
+            connection_id: '',
             activeGroupName: ''
         };
     });
 
-    const displayChat = React.useCallback((name = '') => {
+    const { groups } = useSelector((state: RootState) => state.messages);
+    React.useEffect(() => {
+        const ar = groups?.filter((group) => group.connection_id === state.connection_id);
+        
+        if (ar.length === 1) {
+            const { connection_id, group_name } = ar[0];
+            setState({ connection_id, activeGroupName: group_name  })
+        }
+    }, [groups]);
+
+    const displayChat = React.useCallback((connection_id: string, name = '') => {
         setState(prev => ({
             ...prev,
+            connection_id,
             activeGroupName: name
         }));
+    }, []);
+
+    const updateText = React.useCallback((value: string) => {
+        setState(prev => ({ ...prev, activeGroupName: value }));
     }, []);
 
     return (
@@ -34,7 +52,7 @@ function LoginBody() {
                 >
                     <LoginBodyOptionsBar />
                     <MessagesListBox />
-                    <ChatBox activeGroupName={state.activeGroupName} />
+                    <ChatBox updateText={updateText} activeGroupName={state.activeGroupName} connection_id={state.connection_id} />
                     <AttachmentBox />
                 </motion.div>
             </DisplayChatFn.Provider>
