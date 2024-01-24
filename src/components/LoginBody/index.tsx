@@ -6,6 +6,7 @@ import ChatBox from '../ChatBox';
 import AttachmentBox from '../AttachmentBox';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { IMessageGroupObj } from '../../Types';
 
 export const DisplayChatFn = React.createContext((connection_id: string, name?: string) => {});
 export const DisplayName = React.createContext('');
@@ -20,7 +21,7 @@ function LoginBody() {
 
     const { groups } = useSelector((state: RootState) => state.messages);
     React.useEffect(() => {
-        const ar = groups?.filter((group) => group.connection_id === state.connection_id);
+        const ar = groups?.filter((group: IMessageGroupObj) => group.connection_id === state.connection_id);
         
         if (ar.length === 1) {
             const { connection_id, group_name } = ar[0];
