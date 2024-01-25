@@ -3,6 +3,11 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { FAILED_RESPONSE_USER_CREATE, SUCCESS_RESPONSE_USER_CREATE } from '../Types';
 
 // Define a type for the slice state
+interface IDataInterface {
+  selectedGroupName: string;
+  selectedConnection_id: string;
+}
+
 interface UserState {
   isConnected: {
     status: number;
@@ -10,13 +15,18 @@ interface UserState {
   } | false;
   user: SUCCESS_RESPONSE_USER_CREATE | null;
   error: null | FAILED_RESPONSE_USER_CREATE;
+  data: IDataInterface;
 }
 
 // Define the initial state using that type
 const initialState: UserState = {
   isConnected: false,
   user: null,
-  error: null
+  error: null,
+  data: {
+    selectedGroupName: '',
+    selectedConnection_id: ''
+  }
 }
 
 export const userSlice = createSlice({
@@ -36,10 +46,16 @@ export const userSlice = createSlice({
     setUp_user: (state, action: PayloadAction<SUCCESS_RESPONSE_USER_CREATE | null>) => {
       state.user = action.payload;
       state.error = null;
+    },
+    setUp_selectedChatData: (state, action: PayloadAction<{ groupName: string, connection_id: string }>) => {
+      state.data = {
+        selectedGroupName: action.payload.groupName.trim(),
+        selectedConnection_id: action.payload.connection_id
+      }
     }
   },
 });
 
-export const { set_isConnected, setUp_user, set_error } = userSlice.actions;
+export const { set_isConnected, setUp_user, set_error, setUp_selectedChatData } = userSlice.actions;
 
 export default userSlice;

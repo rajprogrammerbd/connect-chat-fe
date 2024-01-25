@@ -7,7 +7,7 @@ import textFinder from '../assets/static-texts';
 
 function AppBarContainer() {
   return (
-    <Box sx={{ flexGrow: 1 }} position="fixed">
+    <Box sx={{ flexGrow: 1, zIndex: 100 }} position="fixed">
       <AppBar>
         <Toolbar variant="dense">
            <Typography variant="h6" color="inherit" component="div" sx={{ flexGrow: 1 }}>

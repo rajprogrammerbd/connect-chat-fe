@@ -19,7 +19,15 @@ function MessagesListBox() {
                     <p>{textFinder("notMessageToShow")}</p>
                 ) : (
                     <>
-                        {groups.map((chat: IMessageGroupObj, id: number) => <ChatGroup connection_id={chat.connection_id} groupName={chat.group_name} time={chat.time} key={id} data={chat.messages} /> )}
+                        {groups.map((chat: IMessageGroupObj, id: number) => (
+                            <ChatGroup
+                                connection_id={chat.connection_id}
+                                groupName={chat.group_name}
+                                time={chat.time}
+                                key={id}
+                                data={chat.messages}
+                            />
+                        ))}
                     </>
                 )}
             </div>         

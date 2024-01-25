@@ -3,9 +3,9 @@ import { io } from 'socket.io-client';
 import { useDispatch } from 'react-redux';
 import { Store } from 'react-notifications-component';
 import textFinder from './components/assets/static-texts';
-import { setUp_user, set_error, set_isConnected } from './store';
+import { setUp_selectedChatData, setUp_user, set_error, set_isConnected } from './store';
 import HomeBody from "./components/HomeBody";
-import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE, UPDATE_GROUP_NAME } from './Types';
+import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SEND_UPDATE_GROUP_NAME, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE, UPDATE_GROUP_NAME, UPDATE_MESSAGE_AND_GROUP_NAME } from './Types';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { AnimatePresence } from 'framer-motion';
@@ -49,6 +49,13 @@ function App() {
       }));
     });
 
+    socket.on(SEND_UPDATE_GROUP_NAME, (body: UPDATE_MESSAGE_AND_GROUP_NAME) => {
+      const { connection_id, data } = body;
+
+      dispatch(setUp_selectedChatData({ connection_id, groupName: data.group_name }));
+      dispatch(add_message({ messages: data.messages, connection_id, group_name: data.group_name }));
+    });
+
     socket.on(SEND_RESPONSE_CREATED_USER, (response: SUCCESS_RESPONSE_USER_CREATE) => {
       dispatch(setUp_user({ ...response }));
     });
@@ -73,6 +80,7 @@ function App() {
 
     socket.on(SEND_MESSAGES, (body: RESPONSE_CHAT) => {
       dispatch(add_message({ messages: body.messages, connection_id: body.connection_id, group_name: body.group_name }));
+
     });
 
     socket.io.on("reconnect_attempt", () => {

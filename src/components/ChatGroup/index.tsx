@@ -5,6 +5,8 @@ import { IChatGroupProps } from '../../Types';
 import { DisplayChatFn, DisplayName } from '../LoginBody';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
+import { useDispatch } from 'react-redux';
+import { setUp_selectedChatData } from '../../store';
 
 const GridMessageItemBlock = styled.div<{$bgColor: string}>`
     display: grid;
@@ -47,22 +49,31 @@ const LastMessage = styled.p`
 `;
 
 function ChatGroup(props: IChatGroupProps) {
-    const display = React.useContext(DisplayChatFn);
-    const name = React.useContext(DisplayName);
+    const dispatch = useDispatch();
+    // const display = React.useContext(DisplayChatFn);
+    // const name = React.useContext(DisplayName);
+    const { selectedGroupName } = useSelector((state: RootState) => state.user.data);
     
     const { data, groupName, time, connection_id } = props;
 
-    const handleDisplay = (groupName: string) => {
+    const handleDisplay = (groupName: string, connection_id: string) => {
+        dispatch(setUp_selectedChatData({ groupName, connection_id }));
+        /*
         if (name === groupName) {
             display(connection_id);
         } else {
             display(connection_id, groupName);
         }
+        */
     }
 
     return (
         <>
-            <GridMessageItemBlock $bgColor={name === groupName ? "#ddd" : "transparent"} onClick={() => handleDisplay(groupName)} className="message-items-block">
+            <GridMessageItemBlock
+                $bgColor={selectedGroupName === groupName ? "#ddd" : "transparent"}
+                onClick={() => handleDisplay(groupName, connection_id)}
+                className="message-items-block"
+            >
                 <div className="flex items-center justify-center">
                     <RiGroup2Line size={30} />
                 </div>
@@ -74,7 +85,9 @@ function ChatGroup(props: IChatGroupProps) {
                     </Top>
 
                     <Bottom>
-                        <LastMessage>{data[data.length - 1].username}: {data[data.length - 1].message}</LastMessage>
+                        <LastMessage>
+                            {data[data.length - 1].username}: {data[data.length - 1].message}
+                        </LastMessage>
                     </Bottom>
                 </div>
             </GridMessageItemBlock>

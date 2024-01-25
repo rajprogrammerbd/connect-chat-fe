@@ -8,8 +8,13 @@ export const UPDATE_GROUP_NAME = "update_group_names";
 export const FAILED_RESPONSE = "FAILED_RESPONSE";
 export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
 export const MESSAGES = "get_messages";
+export const SEND_UPDATE_GROUP_NAME = 'send_update_group_name';
 export const RECONNECT = 'reconnect-connections';
 export const SEND_MESSAGES = 'send_messages';
+export type UPDATE_MESSAGE_AND_GROUP_NAME = {
+  data: RESPONSE_CHAT;
+  connection_id: string;
+}
 export type SUCCESS_RESPONSE_USER_CREATE = {
   statusCode: number;
   body: {
@@ -91,6 +96,7 @@ export type RESPONSE_CHAT_BODY = {
   connection_id: string;
   is_root: boolean;
   socket_id: string;
+  notification: boolean;
 }
 
 export type RESPONSE_CHAT = {
@@ -107,12 +113,6 @@ export interface IChatGroupProps {
   connection_id: string;
 }
 
-export interface IChatBoxProps {
-  activeGroupName: string;
-  connection_id: string;
-  updateText: (e: string) => void;
-}
-
 export interface IMessageGroupObj {
   messages: RESPONSE_CHAT_BODY[];
   group_name: string;
@@ -122,4 +122,11 @@ export interface IMessageGroupObj {
 
 export interface IInitialState {
   groups: IMessageGroupObj[];
+}
+
+export type SIDE = "left" | "right" | "middle";
+
+export interface ITextMessage {
+  side: SIDE;
+  text: string;
 }

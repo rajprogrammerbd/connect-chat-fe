@@ -2,14 +2,46 @@ import { motion } from "framer-motion";
 import React from "react";
 import { FaCircleUser } from "react-icons/fa6";
 import { IoIosSend } from "react-icons/io";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store/store";
+import { IMessageGroupObj, RESPONSE_CHAT_BODY, SIDE } from "../../Types";
+import TextMessage from "../TextMessage";
 
 function MessageBox() {
+    const { selectedGroupName } = useSelector((state: RootState) => state.user.data);
+    const { body } = useSelector((state: RootState) => state.user.user);
+    const { groups } = useSelector((state: RootState) => state.messages);
+
+    const { messages, connection_id, group_name, time } = React.useMemo((): IMessageGroupObj => {
+        const filter = groups.filter((group: IMessageGroupObj) => group.group_name === selectedGroupName);
+
+       return filter[0];
+    }, [groups]);
+
+    const side = (name: string, notification: boolean): SIDE => {
+        if (notification) {
+            return "middle";
+        }
+        
+        if (body.username === name) {
+            return "left";
+        }
+
+        return "right";
+    }
+
     return (
         <div className="message-box w-full h-full">
             <div className="message-image"></div>
             <div className="message-content">
                 <div className="">
-                    
+                    { messages.map((message: RESPONSE_CHAT_BODY, key: number) => (
+                        <TextMessage
+                            key={key}
+                            side={side(message.username, message.notification)}
+                            text={message.message}
+                        />
+                    )) }
                 </div>
 
                 <div className="flex items-center justify-center">

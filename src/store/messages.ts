@@ -1,7 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { IInitialState, RESPONSE_CHAT_BODY } from '../Types';
-import { FaCropSimple } from 'react-icons/fa6';
 
 const initialState: IInitialState = {
     groups: []

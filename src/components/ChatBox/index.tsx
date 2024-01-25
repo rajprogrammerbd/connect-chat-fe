@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from "react-redux";
-import { IChatBoxProps, IMessageGroupObj, RESPONSE_CHAT_BODY } from "../../Types";
+import { IMessageGroupObj } from "../../Types";
 import textFinder from "../assets/static-texts";
 import { FaCircleUser } from "react-icons/fa6";
 import { IoArrowRedoSharp } from "react-icons/io5";
@@ -8,6 +8,8 @@ import styled from "styled-components";
 import { RootState } from "../../store/store";
 import MessageBox from '../MessageBox';
 import { UpdateGroupNameFunc } from '../../App';
+import { useDispatch } from 'react-redux';
+import { setUp_selectedChatData } from '../../store';
 
 const NoMessageToShow = styled.p`
     color: #ddd;
@@ -51,36 +53,69 @@ const NamedShowDiv = styled.div`
     width: auto;
 `;
 
-function ChatBox(props: IChatBoxProps) {
-    const { activeGroupName, connection_id, updateText } = props;
+interface IState {
+    text: string;
+    state: boolean;
+}
+
+function ChatBox() {
+    const [state, setState] = React.useState<IState>({
+        text: '',
+        state: false
+    });
+    const dispatch = useDispatch();
+    const { selectedGroupName, selectedConnection_id } = useSelector((state: RootState) => state.user.data);
+    // const { activeGroupName, connection_id, updateText } = props;
     const updateGroupNameFn = React.useContext(UpdateGroupNameFunc);
-    const [updateGroupState, setUpdateGroupState] = React.useState<boolean>(false);
+    // const [updateGroupState, setUpdateGroupState] = React.useState<boolean>(false);
+
+    React.useEffect(() => {
+        setState(prev => ({
+            ...prev,
+            text: selectedGroupName
+        }))
+    }, [selectedGroupName]);
 
     const { groups } = useSelector((state: RootState) => state.messages);
     const { body } = useSelector((state: RootState) => state.user.user);
 
     const getGroup = (): IMessageGroupObj => {
-        const filter = groups.filter((group: IMessageGroupObj) => group.connection_id === connection_id);
+        const filter = groups.filter((group: IMessageGroupObj) => group.connection_id === selectedConnection_id);
 
         return filter[0];
     }
 
     const data = getGroup();
 
-    const toggleUpdateGroupName = (): void => {
-        setUpdateGroupState(prev => !prev );
+    const updateText = (text: string): void => {
+        setState(prev => ({
+            ...prev,
+            state: true,
+            text
+        }));
+    }
+
+
+    const toggleUpdateBtn = (): void => {
+        setState(prev => ({
+            ...prev,
+            state: !prev.state
+        }))
     }
 
     const groupNameFn = () => {
-        setUpdateGroupState(prev => !prev);
-
-        updateGroupNameFn(activeGroupName);
+        dispatch(setUp_selectedChatData({ groupName: state.text, connection_id: selectedConnection_id }));
+        updateGroupNameFn(state.text);
+        setState(prev => ({
+            ...prev,
+            state: !prev.state
+        }));
     }
 
     return (
         <>
             <div className="chatbox m-5 rounded-md border-gray-100 border-2 flex flex-col items-center justify-center">
-                {(activeGroupName === "") ? (
+                {(selectedGroupName === "") ? (
                     <>
                         <NoMessageToShow>
                             {textFinder("noChatSelectedMessage")}
@@ -96,13 +131,13 @@ function ChatBox(props: IChatBoxProps) {
                                         <FaCircleUser size={33} />
                                         <div className="ml-3">
                                             <NamedShowDiv>
-                                                {!updateGroupState ? (
+                                                {!state.state ? (
                                                     <Titled>{data.group_name}</Titled>
                                                 ) : (
                                                     <>
                                                         <input
                                                             type="text"
-                                                            value={activeGroupName}
+                                                            value={state.text}
                                                             onChange={e => updateText(e.target.value)}
                                                             className="border-2 border-slate-400 border-solid outline-none rounded-md px-2"
                                                         />
@@ -110,13 +145,13 @@ function ChatBox(props: IChatBoxProps) {
                                                             style={{ backgroundColor: "#1976d2" }}
                                                             className="text-white rounded-lg text-sm py-1 px-3 ml-3"
                                                             onClick={groupNameFn}
-                                                            disabled={activeGroupName.trim() === ""}
+                                                            disabled={state.text.trim() === ""}
                                                         >
                                                             Update
                                                         </button>
                                                     </>
                                                 )}
-                                                {!updateGroupState && <IoArrowRedoSharp style={{ cursor: 'pointer' }} onClick={toggleUpdateGroupName} />}
+                                                {!state.state && <IoArrowRedoSharp style={{ cursor: 'pointer' }} onClick={toggleUpdateBtn} />}
                                             </NamedShowDiv>
                                             <NamedShow>{body.username}</NamedShow>
                                         </div>
