@@ -64,10 +64,8 @@ function ChatBox() {
         state: false
     });
     const dispatch = useDispatch();
-    const { selectedGroupName, selectedConnection_id } = useSelector((state: RootState) => state.user.data);
-    // const { activeGroupName, connection_id, updateText } = props;
+    const { selectedGroupName, selectedConnection_id } = useSelector((states: RootState) => states.user.data);
     const updateGroupNameFn = React.useContext(UpdateGroupNameFunc);
-    // const [updateGroupState, setUpdateGroupState] = React.useState<boolean>(false);
 
     React.useEffect(() => {
         setState(prev => ({
@@ -76,8 +74,8 @@ function ChatBox() {
         }))
     }, [selectedGroupName]);
 
-    const { groups } = useSelector((state: RootState) => state.messages);
-    const { body } = useSelector((state: RootState) => state.user.user);
+    const { groups } = useSelector((states: RootState) => states.messages);
+    const { body } = useSelector((states: RootState) => states.user.user);
 
     const getGroup = (): IMessageGroupObj => {
         const filter = groups.filter((group: IMessageGroupObj) => group.connection_id === selectedConnection_id);

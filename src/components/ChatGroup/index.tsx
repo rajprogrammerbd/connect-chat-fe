@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { RiGroup2Line } from "react-icons/ri";
 import { IChatGroupProps } from '../../Types';
-import { DisplayChatFn, DisplayName } from '../LoginBody';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
 import { useDispatch } from 'react-redux';
@@ -58,13 +57,6 @@ function ChatGroup(props: IChatGroupProps) {
 
     const handleDisplay = (groupName: string, connection_id: string) => {
         dispatch(setUp_selectedChatData({ groupName, connection_id }));
-        /*
-        if (name === groupName) {
-            display(connection_id);
-        } else {
-            display(connection_id, groupName);
-        }
-        */
     }
 
     return (
