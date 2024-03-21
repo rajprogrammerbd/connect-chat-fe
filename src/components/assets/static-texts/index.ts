@@ -16,6 +16,7 @@ const textObjs: IObjects = {
     startNewChatTitle: "Start a new chat",
     startNewChatSubTitle: "Provide all required field (*) details",
     enterYourName: "Enter your name",
+    enterYourMessage: "Enter your message",
     enterYourEmail: "Enter your email address",
     accessConnectionId: "Access the chat world!",
     provideConnectionId: "Provide your connection Id",

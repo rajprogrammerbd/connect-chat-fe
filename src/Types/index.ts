@@ -5,6 +5,7 @@ export type Msg_Type = 'typing' | 'message' | 'started_chat' | 'user_joined' | '
 // Socket actions. 
 export const CREATE_USER = "CREATE_USER";
 export const UPDATE_GROUP_NAME = "update_group_names";
+export const SEND_USER_MESSAGE = 'send_user_message';
 export const FAILED_RESPONSE = "FAILED_RESPONSE";
 export const SEND_RESPONSE_CREATED_USER = "SEND_RESPONSE_CREATED_USER";
 export const MESSAGES = "get_messages";
@@ -129,4 +130,8 @@ export type SIDE = "left" | "right" | "middle";
 export interface ITextMessage {
   side: SIDE;
   text: string;
+}
+
+export interface IMessageBoxState {
+    text: string;
 }

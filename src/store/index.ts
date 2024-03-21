@@ -48,16 +48,9 @@ export const userSlice = createSlice({
       state.error = null;
     },
     setUp_selectedChatData: (state, action: PayloadAction<{ groupName: string, connection_id: string }>) => {
-      if (state.data.selectedGroupName === action.payload.groupName) {
-        state.data = {
-          selectedGroupName: '',
-          selectedConnection_id: ''
-        }
-      } else {
-        state.data = {
-          selectedGroupName: action.payload.groupName.trim(),
-          selectedConnection_id: action.payload.connection_id
-        }
+      state.data = {
+        selectedGroupName: action.payload.groupName.trim(),
+        selectedConnection_id: action.payload.connection_id
       }
     }
   },

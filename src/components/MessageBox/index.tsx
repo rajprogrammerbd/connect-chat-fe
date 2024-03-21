@@ -4,10 +4,17 @@ import { FaCircleUser } from "react-icons/fa6";
 import { IoIosSend } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/store";
-import { IMessageGroupObj, RESPONSE_CHAT_BODY, SIDE } from "../../Types";
+import { IMessageBoxState, IMessageGroupObj, RESPONSE_CHAT_BODY, SIDE } from "../../Types";
 import TextMessage from "../TextMessage";
+import { SendMessage } from "../../App";
+import textFinder from "../assets/static-texts";
 
 function MessageBox() {
+    const [state, setState] = React.useState<IMessageBoxState>({
+        text: ''
+    });
+
+    const sendMessages = React.useContext(SendMessage);
     const { selectedGroupName } = useSelector((state: RootState) => state.user.data);
     const { body } = useSelector((state: RootState) => state.user.user);
     const { groups } = useSelector((state: RootState) => state.messages);
@@ -30,6 +37,13 @@ function MessageBox() {
         return "right";
     }
 
+    const submittedMessage = () => {
+        if (state.text !== '') {
+            sendMessages(body.connection_id, body.is_root, body.username, state.text, body.socket_id);
+            setState(prev => ({ ...prev, text: '' }));
+        }
+    }
+
     return (
         <div className="message-box w-full h-full">
             <div className="message-image"></div>
@@ -49,10 +63,17 @@ function MessageBox() {
                         <div className="absolute" style={{ top: 4, left: 4 }}>
                             <FaCircleUser size={33} />
                         </div>
-                        <input type="text" className="w-full outline-none border border-slate-300 rounded-3xl border-solid" style={{ padding: "7px 100px 7px 50px" }} placeholder="Enter your message" />
+                        <input
+                            type="text"
+                            className="w-full outline-none border border-slate-300 rounded-3xl border-solid"
+                            style={{ padding: "7px 100px 7px 50px" }}
+                            placeholder={textFinder("enterYourMessage")}
+                            onChange={e => setState({ ...state, text: e.target.value })}
+                            value={state.text}
+                        />
                         
                         <div className="absolute text-sm text-white" style={{ right: 6, top: 4 }}>
-                            <motion.button whileTap={{ padding: "5px 9px" }} transition={{ duration: 0.1 }} initial={{ padding: '6px 10px', display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: 'small' }} className="send-message-btn flex flex-row rounded-full items-center bg-blue-600">Send <IoIosSend style={{ marginLeft: 1 }} size={16} /></motion.button>
+                            <motion.button onClick={submittedMessage} whileTap={{ padding: "5px 9px" }} transition={{ duration: 0.1 }} initial={{ padding: '6px 10px', display: 'flex', flexDirection: 'row', alignItems: 'center', fontSize: 'small' }} className="send-message-btn flex flex-row rounded-full items-center bg-blue-600">Send <IoIosSend style={{ marginLeft: 1 }} size={16} /></motion.button>
                         </div>
                     </div>
                 </div>

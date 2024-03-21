@@ -10,6 +10,7 @@ import MessageBox from '../MessageBox';
 import { UpdateGroupNameFunc } from '../../App';
 import { useDispatch } from 'react-redux';
 import { setUp_selectedChatData } from '../../store';
+import { RxCross2 } from "react-icons/rx";
 
 const NoMessageToShow = styled.p`
     color: #ddd;
@@ -147,6 +148,8 @@ function ChatBox() {
                                                         >
                                                             Update
                                                         </button>
+
+                                                        <RxCross2 className="ml-2 cursor-pointer" onClick={toggleUpdateBtn} />
                                                     </>
                                                 )}
                                                 {!state.state && <IoArrowRedoSharp style={{ cursor: 'pointer' }} onClick={toggleUpdateBtn} />}

@@ -28,9 +28,19 @@ const MessageItemMiddle = styled.p`
 `;
 
 // Add styles to text messages later on after integrating the send message system.
-const MessageItemContainer = styled.div``;
+const MessageItemContainer = styled.div<{ $side: "left" | "right" }>`
+    display: block;
+    background-color: ${prop => prop.$side === "left" ? "#1976d2" : "#4665b5"};
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 4px 16px;
+    border-radius: 15px;
+`;
 
-const MessageItemSideBars = styled.p``;
+const MessageItemSideBars = styled.p`
+    font-size: 16px;
+    color: white;
+`;
 
 function TextMessage(props: ITextMessage) {
     const { side, text } = props;
@@ -42,7 +52,7 @@ function TextMessage(props: ITextMessage) {
                     {(side === "middle") ? (
                         <MessageItemMiddle>{text}</MessageItemMiddle>
                     ) : (
-                        <MessageItemContainer>
+                        <MessageItemContainer $side={side}>
                             <MessageItemSideBars>{text}</MessageItemSideBars>
                         </MessageItemContainer>
                     )}

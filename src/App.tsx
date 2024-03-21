@@ -5,7 +5,7 @@ import { Store } from 'react-notifications-component';
 import textFinder from './components/assets/static-texts';
 import { setUp_selectedChatData, setUp_user, set_error, set_isConnected } from './store';
 import HomeBody from "./components/HomeBody";
-import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SEND_UPDATE_GROUP_NAME, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE, UPDATE_GROUP_NAME, UPDATE_MESSAGE_AND_GROUP_NAME } from './Types';
+import { CREATE_USER, FAILED_RESPONSE, FAILED_RESPONSE_USER_CREATE, MESSAGES, RECONNECT, RESPONSE_CHAT, SEND_MESSAGES, SEND_RESPONSE_CREATED_USER, SEND_UPDATE_GROUP_NAME, SEND_USER_MESSAGE, SET_UP_USER, SUCCESS_RESPONSE_USER_CREATE, UPDATE_GROUP_NAME, UPDATE_MESSAGE_AND_GROUP_NAME } from './Types';
 import { useSelector } from 'react-redux';
 import { RootState } from './store/store';
 import { AnimatePresence } from 'framer-motion';
@@ -26,6 +26,7 @@ const socket = io(URL, {
 // React context
 export const SetUpUser = React.createContext<(prop: SET_UP_USER) => void>(() => {});
 export const UpdateGroupNameFunc = React.createContext((groupName: string) => {});
+export const SendMessage = React.createContext((connection_id: string, is_root: boolean, username: string, message: string, socket_id: string) => {});
 
 function App() {
   const dispatch = useDispatch();
@@ -150,6 +151,10 @@ function App() {
     }
   }
 
+  const sendMessage = (connection_id: string, is_root: boolean, username: string, message: string, socket_id: string) => {
+    socket.emit(SEND_USER_MESSAGE, { connection_id, is_root, username, message, socket_id });
+  }
+
   return (
     <SetUpUser.Provider value={setUpUser}>
         <AnimatePresence mode="wait">
@@ -160,7 +165,10 @@ function App() {
             ) : (
               <React.Suspense fallback={<p>Loading</p>}>
                 <UpdateGroupNameFunc.Provider value={updateGroupName}>
-                  <LoginBody />
+                  <SendMessage.Provider value={sendMessage}>
+                    <LoginBody />
+                  </SendMessage.Provider>
+
                 </UpdateGroupNameFunc.Provider>
               </React.Suspense>
             )}
