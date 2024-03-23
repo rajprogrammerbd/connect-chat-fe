@@ -1,63 +1,61 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { IMsg, IUser, ReceivedMessagePayload } from '../Types';
+import { FAILED_RESPONSE_USER_CREATE, SUCCESS_RESPONSE_USER_CREATE } from '../Types';
 
 // Define a type for the slice state
+interface IDataInterface {
+  selectedGroupName: string;
+  selectedConnection_id: string;
+}
+
 interface UserState {
-  isConnected: boolean;
-  connectedUsersList: IUser[];
-  name?: string;
-  isErrorOccured: boolean;
-  userId?: string;
-  chatId?: string;
-  isAdmin?: boolean;
-  messages?: IMsg[];
-  isAdminError: boolean;
+  isConnected: {
+    status: number;
+    message: 'connected' | 'disconnected'
+  } | false;
+  user: SUCCESS_RESPONSE_USER_CREATE | null;
+  error: null | FAILED_RESPONSE_USER_CREATE;
+  data: IDataInterface;
 }
 
 // Define the initial state using that type
 const initialState: UserState = {
   isConnected: false,
-  connectedUsersList: [],
-  isErrorOccured: false,
-  isAdminError: false
+  user: null,
+  error: null,
+  data: {
+    selectedGroupName: '',
+    selectedConnection_id: ''
+  }
 }
 
 export const userSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    set_isAdminError(state, action: PayloadAction<boolean>) {
-      state.isAdminError = action.payload;
+    set_error: (state, action: PayloadAction<FAILED_RESPONSE_USER_CREATE | null>) => {
+      state.error = action.payload;
     },
-    set_isError(state, action: PayloadAction<boolean>) {
-      state.isErrorOccured = action.payload;
-    },
-    set_isConnected: (state, action: PayloadAction<boolean>) => {
-      state.isConnected = action.payload;
-    },
-    update_total_messages: (state, action: PayloadAction<IMsg[]>) => {
-      state.messages = action.payload;
-    },
-    add_message: (state, action: PayloadAction<IMsg>) => {
-      state.messages?.push(action.payload);  
-    },
-    received_message: (state, action: PayloadAction<ReceivedMessagePayload>) => {
-      state.chatId = action.payload.chatId;
-      state.connectedUsersList = action.payload.connectedUsersList;
-      if (action.payload.isAdmin !== undefined) {
-        state.isAdmin = action.payload.isAdmin;
-        state.messages = action.payload.messages;
-        state.name = action.payload.name;
-        state.userId = action.payload.userId;
+    set_isConnected: (state, action: PayloadAction<{ status: number; message: 'connected' | 'disconnected' }>) => {
+      state.isConnected = {
+        status: action.payload.status,
+        message: action.payload.message
       }
     },
-    add_new_user_update: (state, action: PayloadAction<IUser[]>) => {
-      state.connectedUsersList = action.payload;
+
+    setUp_user: (state, action: PayloadAction<SUCCESS_RESPONSE_USER_CREATE | null>) => {
+      state.user = action.payload;
+      state.error = null;
+    },
+    setUp_selectedChatData: (state, action: PayloadAction<{ groupName: string, connection_id: string }>) => {
+      state.data = {
+        selectedGroupName: action.payload.groupName.trim(),
+        selectedConnection_id: action.payload.connection_id
+      }
     }
   },
 });
 
-export const { set_isAdminError, set_isError, set_isConnected, received_message, update_total_messages, add_message, add_new_user_update } = userSlice.actions;
+export const { set_isConnected, setUp_user, set_error, setUp_selectedChatData } = userSlice.actions;
 
 export default userSlice;

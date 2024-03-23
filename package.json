@@ -19,14 +19,17 @@
     "@reduxjs/toolkit": "^1.9.2",
     "ahooks": "^3.7.4",
     "cogo-toast": "^4.2.3",
+    "framer-motion": "^10.16.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.7.1",
+    "react-notifications-component": "^4.0.1",
     "react-redux": "^8.0.5",
     "redux": "^4.2.1",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.4.2",
-    "socket.io-client": "^4.6.0"
+    "socket.io-client": "^4.6.0",
+    "styled-components": "^6.1.8"
   },
   "devDependencies": {
     "@types/react": "^18.0.27",
@@ -39,10 +42,16 @@
     "@types/ws": "^8.5.4",
     "@vitejs/plugin-react": "^3.1.0",
     "@vitest/coverage-c8": "^0.28.4",
+    "autoprefixer": "^10.4.16",
     "jsdom": "^21.1.0",
+    "postcss": "^8.4.32",
     "react-devtools": "^4.27.1",
+    "tailwindcss": "^3.4.0",
     "typescript": "^4.9.3",
     "vite": "^4.1.0",
     "vitest": "^0.28.4"
+  },
+  "resolutions": {
+    "styled-components": "^5"
   }
 }
